@@ -17,7 +17,8 @@ import ManageFaq2 from '../Pages/ManageFaq2';
 import PaymentSetting from '../Pages/PaymentSetting';
 
 const Container = styled.div`
-  
+height: 90vh;
+  overflow: scroll;
 `;
 
 const Main = () => {

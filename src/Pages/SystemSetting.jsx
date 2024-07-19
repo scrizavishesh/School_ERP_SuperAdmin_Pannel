@@ -16,6 +16,7 @@ const Container = styled.div`
     
   }
 .main-content-conatainer22{
+    padding-bottom: 5% !important;
     background-color: #fff;
     margin: 10px;
     /* height: 100vh; */

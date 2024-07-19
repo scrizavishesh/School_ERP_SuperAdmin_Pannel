@@ -525,7 +525,7 @@ const ManageFaq = () => {
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentItems = data?.slice(indexOfFirstItem, indexOfLastItem);
-
+  // console.log(currentItems, 'cvhjhfdxsdfghjkl')
   // Change page
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
@@ -617,7 +617,7 @@ const ManageFaq = () => {
 
               <tbody className='heading-14 align-middle greyTextColor'>
 
-                {currentItems === null ? 
+                {currentItems !== null ? 
                   currentItems?.map((item, index) => (
                     <tr key={item.id} className='heading-14 my-bg-color  align-middle'>
 
@@ -887,7 +887,7 @@ const ManageFaq = () => {
                     <div className='my-button11 '>
                       <button type="button" class="btn btn-outline-success" onClick={requestUpdateApi}>Update</button>
                       {/* UpdateHandleBtn */}
-                      <button type="button" class=" my-cancel-button btn btn-outline-success">Cancel</button>
+                      <button type="button" class=" my-cancel-button btn btn-outline-success"  data-bs-dismiss="offcanvas" aria-label="Close">Cancel</button>
                     </div>
                   </div>
                 </div>

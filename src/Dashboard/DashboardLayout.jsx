@@ -71,7 +71,7 @@ const DashboardLayout = () => {
                     <div className="row bg-white">
                         <Navbar />
                     </div>
-                    <div className="row">
+                    <div className="row overflow-scroll">
                         <Main />
                     </div>
                 </MainContainer>

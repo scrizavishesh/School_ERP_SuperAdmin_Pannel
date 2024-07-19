@@ -575,23 +575,29 @@ const AddNewPackage = async () => {
             <div className="container-fluid ps-3 pe-3 pt-2 pb-2">
               <div className="row pt-3">
                 <div className="col-lg-7 col-md-8 col-sm-12 flex-frow-1">
-                    <nav className='breadcrumnav ' aria-label="breadcrumb">
-                      <ol className="breadcrumb">
-                        <li className="breadcrumb-item"><Link to="#" className='greyText text-decoration-none'><h2>Home &gt; </h2></Link></li>
-                        <li className="breadcrumb-item active greenText" aria-current="page"><h2> Package</h2></li>
-                      </ol>
-                    </nav>
+                    <div className="row">
+                      <nav className='breadcrumnav ' aria-label="breadcrumb">
+                        <ol className="breadcrumb">
+                          <li className="breadcrumb-item"><Link to="#" className='greyText text-decoration-none'><h2>Home &gt; </h2></Link></li>
+                          <li className="breadcrumb-item active greenText" aria-current="page"><h2> Package</h2></li>
+                        </ol>
+                      </nav>
+                    </div>
                 </div>
                 <div className="col-lg-5 col-md-8 col-sm-12">
                   <div className="row">
                     <div className="col-md-9 col-sm-6">
+                      <div className="row">
                       <form className="d-flex" role="search">
                         <input className="form-control formcontrolsearch" type="search" placeholder="Search" aria-label="Search" onChange={(e)=> setSearchKeyData(e.target.value)}/>
                         <button className="btn searchButtons text-white" type="button" onClick={getAllPlans}><h2>Search</h2></button>
                       </form>
+                      </div>
                     </div>
-                    <div className="col-md-3 col-sm-6 text-end ps-0">
+                    <div className="col-md-3 col-sm-6 text-end">
+                      <div className="row">
                       <Link className="btn ps-0 pe-0 addButtons2 text-white" type="submit"  data-bs-toggle="offcanvas" data-bs-target="#AddPackageCanvas" aria-controls="AddPackageCanvas"><h3 className='textVerticalCenter'>+ ADD Packages</h3></Link>
+                      </div>
                     </div>
                   </div>
                 </div>
