@@ -277,6 +277,20 @@ tr{
     height: 38px;
 }
 
+.printButton{
+    background-color: var(--greenColorBtn);
+    border-radius: 5px;
+    width: 64px;
+    height: 36px;
+}
+
+.printButton:hover, .printButton:focus {
+    background-color: var(--greenColorBtn);
+    border-radius: 5px;
+    width: 64px;
+    height: 36px;
+}
+
 .addButtons {
     background-color: var(--greenColorBtn);
     border-radius: 5px;

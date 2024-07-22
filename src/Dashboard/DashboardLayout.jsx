@@ -6,7 +6,7 @@ import Main from '../Main/Main';
 
 const Container = styled.div`
     display: flex;
-    position: fixed;
+    /* position: fixed; */
     width: 100%;
     height: 100vh;
 `;
@@ -34,7 +34,6 @@ const MainContainer = styled.div`
     flex-grow: 1;
     width: ${(props) => (props.sidebarOpen ? '85%' : '96%')};
     transition: all width 0.6s ease; 
-    /* z-index: 1; */
     background-color: #F2F3F6;
 
     @media screen and (max-width: 1000px) {

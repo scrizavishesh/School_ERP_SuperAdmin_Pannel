@@ -139,13 +139,13 @@ const SystemSettin = () => {
         <div className="row heading-14 media-margin-top" >
             <div className="col-lg-6 col-md-6 col-sm-12">
                 <div class="mb-3 ps-3 pt-2 for-media-margin">
-                    <label for="exampleFormControlInput1" class="form-label text-color-000">System Name</label>
+                    <label for="exampleFormControlInput1" class="form-label text-color-000">School Name</label>
                     <input type="email" class="form-control form-focus-input form-control-md heading-14 grey-input-text-color input-border-color" style={{borderRadius:'5px', marginTop:'-5px'}} id="exampleFormControlInput1" placeholder="Enter School Name" />
                 </div>
             </div>
             <div className="col-lg-6 col-md-6 col-sm-12">
             <div class="mb-3 pe-3 pt-2 for-media-margin">
-                    <label for="exampleFormControlInput1" class="form-label text-color-000">System Title</label>
+                    <label for="exampleFormControlInput1" class="form-label text-color-000">School Title</label>
                     <input type="email" class="form-control form-focus-input form-control-md heading-14 grey-input-text-color input-border-color" style={{borderRadius:'5px', marginTop:'-5px'}} id="exampleFormControlInput1" placeholder="Enter System Title" />
                 </div>
             </div>
@@ -160,7 +160,7 @@ const SystemSettin = () => {
             </div>
             <div className="col-lg-6 col-md-6 col-sm-12">
             <div class="mb-3 pe-3 pt-2 for-media-margin">
-                    <label for="exampleFormControlInput1" class="form-label text-color-000">System Email</label>
+                    <label for="exampleFormControlInput1" class="form-label text-color-000">School Email</label>
                     <input type="email" class="form-control form-focus-input form-control-md heading-14 grey-input-text-color input-border-color" style={{borderRadius:'5px', marginTop:'-5px'}} id="exampleFormControlInput1" placeholder="Enter System Email" />
                 </div>
             </div>

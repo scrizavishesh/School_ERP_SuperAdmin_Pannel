@@ -74,17 +74,18 @@ const AdminDashboard = () => {
       var response = await getDashDataApi();
       if(response?.status===200){
         if(response?.data?.status==='success'){
-          setloaderState(false);
           setDashData(response?.data?.totalData);
           console.log(response?.data?.totalData, 'Dash Data')
+          setloaderState(false);
         }
       }
       else{
+        setloaderState(false);
         console.log(response?.data?.msg);
       }
     }
     catch{
-
+      setloaderState(false);
     }
   }
 
@@ -92,12 +93,9 @@ const AdminDashboard = () => {
     try{
       setloaderState(true);
       var response = await getSchoolDataApi(searchKeyData);
-      console.log(response, 'school data response')
       if(response?.status===200){
-        console.log(response?.data ,'200')
         if(response?.data?.status ==='success'){
           console.log('success')
-          setSchoolData(response?.data?.schools);
           setSchoolData(response?.data?.schools);
           toast.success(response.data.message)
           setloaderState(false);

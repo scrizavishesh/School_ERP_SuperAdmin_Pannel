@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { Icon } from '@iconify/react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useSidebarContext } from '../Dashboard/DashboardLayout';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { logoutApi } from '../Utils/Apis';
+import toast, { Toaster } from 'react-hot-toast';
 
 const Container = styled.div`
     background-color: var(--sidebarBackground);
@@ -43,6 +44,32 @@ const Container = styled.div`
 
     .borderBottom {
         border-bottom: 1px solid var(--borderSidebar);
+    }
+
+    .form-check-input{
+        box-shadow: none ;
+        border: 1px solid #d7d7d7;
+    }
+
+    .formdltcheck:checked{
+        background-color: #B50000;
+        border-color: #B50000;
+    }
+
+    .correvtSVG{
+        position: relative;
+        width: fit-content ;
+        margin-left: 43% !important;
+        margin-bottom: -16% !important;
+        background-color: #2BB673;
+        width: 73px;
+        height: 73px;
+        align-items: center;
+    }
+
+    .contbtn{
+        margin-left: 41% !important;
+        margin-top: -20% !important;
     }
 
     .menus {
@@ -164,45 +191,58 @@ const StickyHeader = styled.div`
 
 const Sidebar = () => {
 
-    const token = localStorage.getItem('token');
+    const navigate = useNavigate();
     const { sidebarOpen, toggleSidebar } = useSidebarContext();
 
+    const token = localStorage.getItem('token');
+    const [isChecked, setIsChecked] = useState(false);
     const [activeLink, setActiveLink] = useState('dashboard');
+    const [logoutWarn, setLogoutWarn] = useState(true);
 
     const handleActiveLink = (link) => {
         setActiveLink(link);
     };
 
-    const handleLogout = async() =>{
-        try{
-            var response = await logoutApi();
-            console.log(response)
-            if(response?.status===200){
-                if(response?.data?.status==='success'){
-                    localStorage.removeItem('token')
-                    navigate('/')
-                    window.location.reload(); 
+    useEffect(() => {
+        navigate('/');
+    }, [logoutWarn, token])
+
+
+    const handleLogout = async () => {
+        if (isChecked) {
+            try {
+                var response = await logoutApi();
+                console.log(response)
+                if (response?.status === 200) {
+                    if (response?.data?.status === 'success') {
+                        localStorage.removeItem('token')
+                        setLogoutWarn(!logoutWarn);
+                    }
+                }
+                else {
+                    console.log(response?.data?.msg);
                 }
             }
-            else{
-                console.log(response?.data?.msg);
+            catch {
+
             }
         }
-        catch{
-
+        else{
+            toast.error('Are you Sure you want to logout ?')
         }
     }
+
 
     return (
         <Container sidebarOpen={sidebarOpen}>
             <div className="container-fluid">
                 <div className="row sticky-top">
-                <StickyHeader className="borderBottom">
-                    <div className={` ${sidebarOpen ? "p-2" : "pt-3 pb-4"} text-white d-flex justify-content-center align-self-center`}>
-                        <img className={` sidebarclass {sidebarOpen ? "p-0" : "pt-4 pb-4"}`} src={sidebarOpen ? "./images/Scrizalogo.svg" : "./images/ScrizaSmallLogo.png"} alt="sidebarLogo" style={{ transition: 'opacity 0.3s ease' }} />
-                        <Icon className='toggle-icon' icon="emojione:left-arrow" width="1.7em" height="1.7em" onClick={toggleSidebar} />
-                    </div>
-                </StickyHeader>
+                    <StickyHeader className="borderBottom">
+                        <div className={` ${sidebarOpen ? "p-2" : "pt-3 pb-4"} text-white d-flex justify-content-center align-self-center`}>
+                            <img className={` sidebarclass {sidebarOpen ? "p-0" : "pt-4 pb-4"}`} src={sidebarOpen ? "./images/Scrizalogo.svg" : "./images/ScrizaSmallLogo.png"} alt="sidebarLogo" style={{ transition: 'opacity 0.3s ease' }} />
+                            <Icon className='toggle-icon' icon="emojione:left-arrow" width="1.7em" height="1.7em" onClick={toggleSidebar} />
+                        </div>
+                    </StickyHeader>
                 </div>
                 <div className="row overflow-scroll">
                     <ul className='p-0'>
@@ -351,24 +391,44 @@ const Sidebar = () => {
                     <h2 className="offcanvas-title fontWeight900" id="staticBackdropLabel">Logout Message</h2>
                 </div>
                 <div className="offcanvas-body p-0">
-                    <div>
+                    {logoutWarn
+                        ?
                         <div>
                             <p className='border-bottom p-2'>Logout</p>
                             <div className="text-center p-5">
                                 <p className='mb-2'><img src="./images/logout.svg" alt="" /></p>
-                                <h1 className='mb-2'>Are you Sure?</h1>
-                                <h3 className='greyText'>Are you Sure you want to logout?</h3>
+                                <h1 className='mb-3'>Are you Sure?</h1>
+                                <div className="d-flex align-self-center justify-content-center mb-3">
+                                    <input className="form-check-input formdltcheck me-2 mt-0 align-self-center" type="checkbox" value="" id="flexCheckChecked" onChange={(e) => setIsChecked(e.target.checked)} />
+                                    <label className="form-check-label align-self-center" htmlFor="flexCheckChecked">
+                                        <h3 className='greyText'>Are you Sure you want to logout?</h3>
+                                    </label>
+                                </div>
                                 <p className='text-center p-3'>
                                     <button className='btn deleteButtons text-white' onClick={handleLogout}>Logout</button>
                                     <button className='btn cancelButtons ms-3' data-bs-dismiss="offcanvas" aria-label="Close">Cancel</button>
                                 </p>
                             </div>
                         </div>
+                        :
+
+                        <div>
+                            <p className='border-bottom p-2'>Logout</p>
+                            <div className="mt-3">
+                                <div className='correvtSVG p-3 pt-4 rounded-circle'><img src="./images/Correct.svg" alt="" /></div>
+                                <div className="updatetext border m-4 border-2  ms-5 greydiv rounded-3 text-center greyText p-5">
+                                    <p className='greyText warningText pt-2'>You have been<br />Successfully Logged Out</p>
+                                </div>
+                                <button className='btn contbtn continueButtons text-white' data-bs-dismiss="offcanvas" aria-label="Close" onClick={()=> window.location.reload()}>Continue</button>
+                            </div>
+                        </div>
+                    }
+                    <div>
                     </div>
                 </div>
             </div>
 
-
+            <Toaster/>
         </Container>
     );
 };

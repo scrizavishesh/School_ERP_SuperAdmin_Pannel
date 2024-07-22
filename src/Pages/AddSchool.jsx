@@ -408,6 +408,9 @@ const AddSchool = () => {
       catch {
       }
     }
+    else{
+      toast.error('Please validate all fields first')
+    }
   }
 
 
@@ -580,7 +583,11 @@ const AddSchool = () => {
                         <label htmlFor="inputSchlName" className="form-label"><h3>Gender*</h3></label>
                       </div>
                       <div className="col-md-12">
-                        <input type="text" className={`form-control ${adminGenderError ? 'border-1 border-danger' : ''} `} id="inputSchlName" placeholder='Select Gender' onChange={handleAdminGender} />
+                        <select className={`form-select font14 ${adminGenderError ? 'border-1 border-danger' : ''} `} aria-label="Default select example" onChange={(e) => handleAdminGender(e)}>
+                            <option >--- Choose ---</option>
+                            <option value='Male'>Male</option>
+                            <option value='Female'>Female</option>
+                        </select>
                       </div>
                       <div className="col-md-12">
                         <span className="text-danger">{adminGenderError}</span>

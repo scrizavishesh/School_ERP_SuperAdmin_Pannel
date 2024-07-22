@@ -190,7 +190,7 @@ const Packages = () => {
 // Pagination
 
 const [currentPage, setCurrentPage] = useState(1);
-const [itemsPerPage, setItemsPerPage] = useState(2);
+const [itemsPerPage, setItemsPerPage] = useState(10);
 const [totalItems, setTotalItems] = useState(0);
 
 // Pagination
@@ -224,12 +224,13 @@ const [totalItems, setTotalItems] = useState(0);
     try{
       setloaderState(true);
       var response = await getAllPlanApi(searchKeyData);
+      console.log(response)
       if(response?.status===200){
         if(response?.data?.status==='success'){
           setloaderState(false);
           setAllPlan(response?.data?.plans);
           setTotalItems(response?.data?.totalPlans)
-          toast.success(response?.data?.msg)
+          toast.success(response?.data?.message)
         }
       }
       else{
@@ -253,7 +254,7 @@ const [totalItems, setTotalItems] = useState(0);
           setPlanIdStudentLimitData(response?.data?.plans?.studentLimit);
           setPlanIdIntervalData(response?.data?.plans?.type);   //Sir ye line edit kr dijiye wo chl jayega
           setPlanIdStatusData(response?.data?.plans?.status);
-          toast.success(response?.data?.msg)
+          toast.success(response?.data?.message)
         }
       }
       else{

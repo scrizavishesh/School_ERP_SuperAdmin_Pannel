@@ -922,7 +922,7 @@ const AllSchools = () => {
                     </thead>
                     <tbody>
                       {viewFeaturesData.map((item, index) => (
-                        <tr key={item.id} className=' align-middle'>
+                        <tr key={index} className=' align-middle'>
                           <td>{index + 1}.</td>
                           <td>{item.featureName}</td>
                           <td>{item.status ? <span className='activeText'>Active</span> : <span className='deactiveText'>InActive</span>}</td>
