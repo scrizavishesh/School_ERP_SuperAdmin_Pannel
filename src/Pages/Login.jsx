@@ -31,6 +31,15 @@ const Container = styled.div`
         font-size: 16px;
     }
 
+    .form-check-input:checked{
+        background-color: var(--greenTextColor);
+        border-color: var(--greenTextColor);
+    }
+
+    .form-check-input{
+        box-shadow: none !important;
+    }
+
     .formcontrolinputpass{
         border-top: 1px solid #E4E7EB !important;
         border-left: 1px solid #E4E7EB !important;

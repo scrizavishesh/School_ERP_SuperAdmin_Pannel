@@ -8,6 +8,8 @@ import { SubscriptionPutApi } from '../Utils/Apis'
 import { PlanGetApi } from '../Utils/Apis'
 import { Link } from 'react-router-dom';
 import DataLoader from '../Layouts/Loader';
+import ReactPaginate from 'react-paginate';
+import { Icon } from '@iconify/react';
 
 
 // ## style css area start ####  
@@ -316,16 +318,20 @@ const Subscription = () => {
   const [isValidPassword, setIsValidPassword] = useState(true);
   const [isValidPasswordRequired, setIsValidPasswordRequired] = useState(true);
 
-  const [searchKeyData , setSearchKeyData] = useState('');
+  const [searchKeyData, setSearchKeyData] = useState('');
 
   // Pagination
-  
+
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(2); // Change this value as needed
-  const [totalItems, setTotalItems] = useState(0);
-  
-  // Pagination
-  
+  const [totalPages, setTotalPages] = useState(1);
+  const [pageNo, setPageNo] = useState(1);
+  const [pageSize, setPageSize] = useState(5);
+
+  const [startDate, setStartDate] = useState('');
+  const [lastDate, setLastDate] = useState('');
+
+
+
   const [inputValues, setInputValue] = useState({
     putphoneNo: ''
   });
@@ -342,19 +348,25 @@ const Subscription = () => {
   useEffect(() => {
     showName()
     Getallplan()
-  }, []);
+  }, [startDate, pageNo]);
+
+  const handlePageClick = (event) => {
+    setPageNo(event.selected + 1); // as event start from 0 index
+  };
 
   // Get All 
 
   const showName = async (id) => {
     try {
       setloaderState(true);
-      const response = await GetApi(searchKeyData);
+      const response = await GetApi(searchKeyData, pageNo, pageSize, startDate, lastDate);
       console.log('subscription-get-all-api', response);
       if (response?.status === 200) {
         setloaderState(false);
         toast.success(response?.data?.msg);
         setData(response.data.subscriptions)
+        setCurrentPage(response?.data?.currentPage)
+        setTotalPages(response?.data?.totalPages)
 
       } else {
         toast.error(response?.data?.msg);
@@ -478,7 +490,9 @@ const Subscription = () => {
   const Getallplan = async () => {
     try {
       const searchKey = '';
-      const response = await PlanGetApi(searchKey);
+      const page = '';
+      const size = '';
+      const response = await PlanGetApi(searchKey, page, size);
       console.log('addPlan-1111', response)
       if (response?.status === 200) {
         toast.success(data?.msg);
@@ -502,26 +516,6 @@ const Subscription = () => {
       setShowdelete(true)
     }
   }
-
-
-
-  // **************************************   Pagination   *************************************************
-
-  const indexOfLastItem = currentPage * itemsPerPage;
-  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentItems = data.slice(indexOfFirstItem, indexOfLastItem);
-
-  // Change page
-  const paginate = (pageNumber) => setCurrentPage(pageNumber);
-
-  // Pagination links/buttons
-  const pageNumbers = [];
-  for (let i = 1; i <= Math.ceil(totalItems / itemsPerPage); i++) {
-    pageNumbers.push(i);
-  }
-
-  // **************************************   Pagination   *************************************************
-
 
 
 
@@ -573,7 +567,7 @@ const Subscription = () => {
                 <span className="input-group-text button-bg-color button-color heading-14" style={{ cursor: 'pointer', height: "34px" }} id="basic-addon2">Search</span> */}
 
                 <form className="d-flex" role="search">
-                  <input className="form-control input-border-color form-focus" type="search" placeholder="Search" aria-label="Search" onChange={(e)=> setSearchKeyData(e.target.value)} style={{ height: '31px' }}/>
+                  <input className="form-control input-border-color form-focus" type="search" placeholder="Search" aria-label="Search" onChange={(e) => setSearchKeyData(e.target.value)} style={{ height: '31px' }} />
                   <button className="btn searchButtons text-white" type="button" onClick={showName}><h2>Search</h2></button>
                 </form>
               </div>
@@ -616,7 +610,7 @@ const Subscription = () => {
 
               <tbody className='heading-14 align-middle greyTextColor greyText'>
                 {
-                  currentItems.map((item, index) => (
+                  data.map((item, index) => (
                     <tr key={item.id} className='my-bg-color align-middle'>
 
                       <td className=' greyText'>{index + 1}</td>
@@ -651,26 +645,21 @@ const Subscription = () => {
             </table>
 
             <div className="d-flex">
-                <div className="ms-auto">
-                  <ul className="pagination">
-                    {pageNumbers.map((number) => (
-                      <li key={number} className="page-item">
-                        <button
-                          className={`btn me-2 ${currentPage === number ? 'activeBtn' : 'page-link '}`}
-                          onClick={() => paginate(number)}
-                        >
-                          {number}
-                        </button>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
+              <p className='font14'>Showing {currentPage} of {totalPages} Pages</p>
+              <div className="ms-auto">
+                <ReactPaginate
+                  previousLabel={<Icon icon="tabler:chevrons-left" width="1.4em" height="1.4em" />}
+                  nextLabel={<Icon icon="tabler:chevrons-right" width="1.4em" height="1.4em" />}
+                  breakLabel={'...'} breakClassName={'break-me'} pageCount={totalPages} marginPagesDisplayed={2} pageRangeDisplayed={10}
+                  onPageChange={handlePageClick} containerClassName={'pagination'} subContainerClassName={'pages pagination'} activeClassName={'active'}
+                />
               </div>
-              
+            </div>
+
 
 
           </div>
-{/* 
+          {/* 
           <div className="row ">
             <div className='d-flex justify-content-between '>
               <div className='heading-13 ps-4'>

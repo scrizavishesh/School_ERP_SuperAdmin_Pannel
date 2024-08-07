@@ -115,7 +115,9 @@ const AddSchool = () => {
   const getAllPlans = async() => {
     try{
       const searchKey = ''
-      var response = await getAllPlanApi(searchKey);
+      const page = ''
+      const size = ''
+      var response = await getAllPlanApi(searchKey, page, size);
       if(response?.status===200){
         if(response?.data?.status==='success'){
           setAllPlan(response?.data?.plans);
@@ -397,12 +399,12 @@ const AddSchool = () => {
           console.log(response)
           if (response?.data?.status === 'success') {
             setgetSchoolData(response?.data?.school);
-            toast.success(response?.data?.msg)
+            toast.success(response?.data?.message)
             navigate('/allSchoolsPage')
           }
         }
         else {
-          console.log(response?.data?.msg);
+          console.log(response?.data?.message);
         }
       }
       catch {

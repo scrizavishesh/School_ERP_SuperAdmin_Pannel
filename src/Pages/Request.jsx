@@ -8,6 +8,8 @@ import { RequestGetByIdApi } from '../Utils/Apis'
 import { RequestPutApi } from '../Utils/Apis'
 import { RequestUpdatePutApi } from '../Utils/Apis'
 import DataLoader from '../Layouts/Loader';
+import ReactPaginate from 'react-paginate';
+import { Icon } from '@iconify/react';
 
 
 // ## style css area start ####  
@@ -324,16 +326,19 @@ const ManageFaq = () => {
   const [isValidPassword, setIsValidPassword] = useState(true);
   const [isValidPasswordRequired, setIsValidPasswordRequired] = useState(true);
 
-  const [searchKeyData , setSearchKeyData] = useState('');
+  const [searchKeyData, setSearchKeyData] = useState('');
 
   // Pagination
-  
+
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(2); // Change this value as needed
-  const [totalItems, setTotalItems] = useState(0);
-  
-  // Pagination
-  
+  const [totalPages, setTotalPages] = useState(1);
+  const [pageNo, setPageNo] = useState(1);
+  const [pageSize, setPageSize] = useState(5);
+
+  const [startDate, setStartDate] = useState('');
+  const [lastDate, setLastDate] = useState('');
+
+
 
   const [inputValues, setInputValue] = useState({
     reqphone: ''
@@ -345,20 +350,25 @@ const ManageFaq = () => {
   useEffect(() => {
     showName();
     RequestGetByIdApi();
-  }, []);
+  }, [startDate, pageNo]);
+
+  const handlePageClick = (event) => {
+    setPageNo(event.selected + 1); // as event start from 0 index
+  };
 
 
   // get all api
   const showName = async () => {
     try {
       setloaderState(true);
-      const response = await RequestGetApi(searchKeyData);
+      const response = await RequestGetApi(searchKeyData, pageNo, pageSize, startDate, lastDate);
       console.log('get-all-api-of-request', response)
       if (response?.status === 200) {
         setloaderState(false);
         toast.success(response?.data?.message);
         setData(response?.data?.requests)
-        setTotalItems(response?.data?.totalRequest)
+        setCurrentPage(response?.data?.currentPage)
+        setTotalPages(response?.data?.totalPages)
         setPutdata(response?.data?.requests)
 
       } else {
@@ -520,24 +530,6 @@ const ManageFaq = () => {
   }
 
 
-  // **************************************   Pagination   *************************************************
-
-  const indexOfLastItem = currentPage * itemsPerPage;
-  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentItems = data?.slice(indexOfFirstItem, indexOfLastItem);
-  // console.log(currentItems, 'cvhjhfdxsdfghjkl')
-  // Change page
-  const paginate = (pageNumber) => setCurrentPage(pageNumber);
-
-  // Pagination links/buttons
-  const pageNumbers = [];
-  for (let i = 1; i <= Math.ceil(totalItems / itemsPerPage); i++) {
-    pageNumbers.push(i);
-  }
-
-  // **************************************   Pagination   *************************************************
-
-
 
   return (
     <Container>
@@ -574,8 +566,8 @@ const ManageFaq = () => {
             </form>
             <div className='me-2'>
               <div class="input-group mb-3 ">
-                <input className="form-control input-border-color form-focus" type="search" placeholder="Search" aria-label="Search" onChange={(e)=> setSearchKeyData(e.target.value)} style={{ height: '31px' }}/>
-                  <button className="btn searchButtons text-white" type="button" onClick={showName}><h2>Search</h2></button>
+                <input className="form-control input-border-color form-focus" type="search" placeholder="Search" aria-label="Search" onChange={(e) => setSearchKeyData(e.target.value)} style={{ height: '31px' }} />
+                <button className="btn searchButtons text-white" type="button" onClick={showName}><h2>Search</h2></button>
               </div>
             </div>
           </div>
@@ -617,8 +609,7 @@ const ManageFaq = () => {
 
               <tbody className='heading-14 align-middle greyTextColor'>
 
-                {currentItems !== null ? 
-                  currentItems?.map((item, index) => (
+                {data?.map((item, index) => (
                     <tr key={item.id} className='heading-14 my-bg-color  align-middle'>
 
                       <td className='  greyText'>{index + 1}</td>
@@ -644,29 +635,24 @@ const ManageFaq = () => {
                         </div>
                       </td>
                     </tr>
-                  )):<></>}
+                  ))}
               </tbody>
               <Toaster />
             </table>
           </div>
 
           <div className="d-flex">
-              <div className="ms-auto">
-                <ul className="pagination">
-                  {pageNumbers.map((number) => (
-                    <li key={number} className="page-item">
-                      <button
-                        className={`btn me-2 ${currentPage === number ? 'activeBtn' : 'page-link '}`}
-                        onClick={() => paginate(number)}
-                      >
-                        {number}
-                      </button>
-                    </li>
-                  ))}
-                </ul>
-              </div>
+            <p className='font14'>Showing {currentPage} of {totalPages} Pages</p>
+            <div className="ms-auto">
+              <ReactPaginate
+                previousLabel={<Icon icon="tabler:chevrons-left" width="1.4em" height="1.4em" />}
+                nextLabel={<Icon icon="tabler:chevrons-right" width="1.4em" height="1.4em" />}
+                breakLabel={'...'} breakClassName={'break-me'} pageCount={totalPages} marginPagesDisplayed={2} pageRangeDisplayed={10}
+                onPageChange={handlePageClick} containerClassName={'pagination'} subContainerClassName={'pages pagination'} activeClassName={'active'}
+              />
             </div>
-  
+          </div>
+
 
         </div>
 
@@ -887,7 +873,7 @@ const ManageFaq = () => {
                     <div className='my-button11 '>
                       <button type="button" class="btn btn-outline-success" onClick={requestUpdateApi}>Update</button>
                       {/* UpdateHandleBtn */}
-                      <button type="button" class=" my-cancel-button btn btn-outline-success"  data-bs-dismiss="offcanvas" aria-label="Close">Cancel</button>
+                      <button type="button" class=" my-cancel-button btn btn-outline-success" data-bs-dismiss="offcanvas" aria-label="Close">Cancel</button>
                     </div>
                   </div>
                 </div>

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import styled from 'styled-components';
 import { Link, useNavigate } from 'react-router-dom';
 import { addNewAddonApi } from '../Utils/Apis';
-import toast,{Toaster} from 'react-hot-toast';
+import toast, { Toaster } from 'react-hot-toast';
 
 const Container = styled.div`
   height: 92vh;
@@ -119,29 +119,30 @@ const AddAddon = () => {
 
   const AddNewAddon = async () => {
     if (validateFields()) {
-      console.log('valid')
-      try {
-       const data = {
-          "featureName": FeatureName,
-          "featureIdentity": IdentityName,
-          "status": statuss
-       }
-        console.log(data)
-        var response = await addNewAddonApi(data);
-        console.log('api hit 1')
-        if (response?.status === 200) {
-          console.log(response)
-          if (response?.data?.status === 'success') {
-            toast.success(response?.data?.msg)
-            navigate('/addons')
+      if (FeatureNameError === '' && IdentityNameError === '' && statussError === '') {
+        console.log('valid')
+        try {
+          const data = {
+            "featureName": FeatureName,
+            "featureIdentity": IdentityName,
+            "status": statuss
+          }
+          console.log(data)
+          var response = await addNewAddonApi(data);
+          if (response?.status === 200) {
+            console.log(response)
+            if (response?.data?.status === 'success') {
+              toast.success(response?.data?.msg)
+              navigate('/addons')
+            }
+          }
+          else {
+            console.log(response?.data?.msg);
           }
         }
-        else {
-          console.log(response?.data?.msg);
+        catch {
+          console.log('invalid')
         }
-      }
-      catch {
-        console.log('invalid')
       }
     }
   }
@@ -165,43 +166,43 @@ const AddAddon = () => {
             <div className="col-md-3 col-sm-12">
               <div className="row">
                 <form className="d-flex" role="search">
-                  <input className="form-control formcontrolsearch" type="search" placeholder="Search" aria-label="Search"/>
+                  <input className="form-control formcontrolsearch" type="search" placeholder="Search" aria-label="Search" />
                   <button className="btn searchButtons text-white" type="submit"><h2>Search</h2></button>
                 </form>
               </div>
             </div>
           </div>
           <div className="row mb-3"></div>
-            <div className='cardradius bg-white p-3'>
-              <form>
-                <div className="row">
-                  <div className="col-md-4 col-sm-12">
-                    <label htmlFor="BundleName" className="form-label greyText">Addon Feature Name</label>
-                    <input type="text" className={`form-control ${FeatureNameError ? 'border-1 border-danger' : ''} `} id="inputSchlEmail" placeholder='Enter Addon Feature Name' onChange={handleFeatureNameChange} />
-                    <span className="text-danger">{FeatureNameError}</span>
-                  </div>
-                  <div className="col-md-4 col-sm-12">
-                    <label htmlFor="BundleName" className="form-label greyText">Status</label>
-                    <select className={`form-select ${statussError ? 'border-1 border-danger' : ''} `} aria-label="Default select example" onChange={handleStatusChange}>
-                      <option defaultValue>-- Select --</option>
-                      <option value='true'>Active</option>
-                      <option value='false'>InActive</option>
-                    </select>
-                    <span className="text-danger">{statussError}</span>
-                  </div>
-                  <div className="col-md-4 col-sm-12">
-                    <label htmlFor="BundleName" className="form-label greyText">Identity Name</label>
-                    <input type="text" className={`form-control ${IdentityNameError ? 'border-1 border-danger' : ''} `} id="inputSchlName" placeholder='Enter Identity Name' onChange={handleIdentityNameChange} />
-                    <span className="text-danger">{IdentityNameError}</span>
-                  </div>
+          <div className='cardradius bg-white p-3'>
+            <form>
+              <div className="row">
+                <div className="col-md-4 col-sm-12">
+                  <label htmlFor="BundleName" className="form-label greyText">Addon Feature Name</label>
+                  <input type="text" className={`form-control ${FeatureNameError ? 'border-1 border-danger' : ''} `} id="inputSchlEmail" placeholder='Enter Addon Feature Name' onChange={handleFeatureNameChange} />
+                  <span className="text-danger">{FeatureNameError}</span>
                 </div>
-                <p className='text-center p-3'>
-                  <button className='btn addButtons text-white' onClick={AddNewAddon} type='button'>Add Addon</button>
-                  <button className='btn cancelButtons ms-3'>Cancel</button>
-                </p>
-              </form>
-            </div>
-          <Toaster/>
+                <div className="col-md-4 col-sm-12">
+                  <label htmlFor="BundleName" className="form-label greyText">Status</label>
+                  <select className={`form-select ${statussError ? 'border-1 border-danger' : ''} `} aria-label="Default select example" onChange={handleStatusChange}>
+                    <option selected disabled value=''>-- Select --</option>
+                    <option value='true'>Active</option>
+                    <option value='false'>InActive</option>
+                  </select>
+                  <span className="text-danger">{statussError}</span>
+                </div>
+                <div className="col-md-4 col-sm-12">
+                  <label htmlFor="BundleName" className="form-label greyText">Identity Name</label>
+                  <input type="text" className={`form-control ${IdentityNameError ? 'border-1 border-danger' : ''} `} id="inputSchlName" placeholder='Enter Identity Name' onChange={handleIdentityNameChange} />
+                  <span className="text-danger">{IdentityNameError}</span>
+                </div>
+              </div>
+              <p className='text-center p-3'>
+                <button className='btn addButtons text-white' onClick={AddNewAddon} type='button'>Add Addon</button>
+                <button className='btn cancelButtons ms-3'>Cancel</button>
+              </p>
+            </form>
+          </div>
+          <Toaster />
         </div>
       </Container>
     </>
@@ -209,3 +210,8 @@ const AddAddon = () => {
 }
 
 export default AddAddon
+
+
+
+
+

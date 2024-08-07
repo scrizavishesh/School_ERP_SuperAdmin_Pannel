@@ -1,12 +1,13 @@
-import React, {useEffect, useState} from 'react'
+import React, { useEffect, useState } from 'react'
 import styled from 'styled-components'
 import { Link } from 'react-router-dom';
 import { Icon } from '@iconify/react';
 import { deletePerByidApi, deleteSpeFeaByidApi, getAllSpeFeatApi, getPermBySpeFeaIdApi, updateSpeFeaNameApi } from '../Utils/Apis';
-import toast, {Toaster} from 'react-hot-toast';
+import toast, { Toaster } from 'react-hot-toast';
 import DataLoader from '../Layouts/Loader';
+import ReactPaginate from 'react-paginate';
 
-const ContainerCSS= styled.div`
+const ContainerCSS = styled.div`
 
   height: 92vh;
   overflow-y: scroll;
@@ -133,343 +134,329 @@ const ContainerCSS= styled.div`
 `;
 
 const Addon = () => {
-  
-const token = localStorage.getItem('token');
-//loader State
-const [loaderState, setloaderState] = useState(false);
-const [DeleteWarning, setDeleteWarning]= useState(true);
-const [EditBundleWarn, setEditBundleWarn]= useState(true);
-const [EditFeatureWarn, setEditFeatureWarn]= useState(true);
-const [EditBundleName, setEditBundleName]= useState('');
-const [EditBundleId, setEditBundleId]= useState('');
-const [deletFeatureId, setdeletFeatureId]= useState('');
-const [newBundleName, setNewBundleName]= useState('');
-const [newBundleNameError, setNewBundleNameError]= useState('');
-const [EditPerNameBySpeFeaId, setEditNamePerBySpeFeaId]= useState('');
-const [PerDataBySpeFeaId, setPerDataBySpeFeaId]= useState([]);
-const [isChecked, setIsChecked] = useState(false);
-const [allSpeFeature, setAllSpeFeature] = useState([]);
-const [refreshDelete , setRefreshDelete] = useState(false);
-const [refreshUpdate , setRefreshUpdate] = useState(false);
-const [refreshFeature , setRefreshFeature] = useState(false);
-const [searchKeyData , setSearchKeyData] = useState('');
-const [featureIdd, setFeatureIdd] = useState('');
 
-// Pagination
+  const token = localStorage.getItem('token');
+  //loader State
+  const [loaderState, setloaderState] = useState(false);
+  const [DeleteWarning, setDeleteWarning] = useState(true);
+  const [EditBundleWarn, setEditBundleWarn] = useState(true);
+  const [EditFeatureWarn, setEditFeatureWarn] = useState(true);
+  const [EditBundleName, setEditBundleName] = useState('');
+  const [EditBundleId, setEditBundleId] = useState('');
+  const [deletFeatureId, setdeletFeatureId] = useState('');
+  const [newBundleName, setNewBundleName] = useState('');
+  const [newBundleNameError, setNewBundleNameError] = useState('');
+  const [EditPerNameBySpeFeaId, setEditNamePerBySpeFeaId] = useState('');
+  const [PerDataBySpeFeaId, setPerDataBySpeFeaId] = useState([]);
+  const [isChecked, setIsChecked] = useState(false);
+  const [allSpeFeature, setAllSpeFeature] = useState([]);
+  const [refreshDelete, setRefreshDelete] = useState(false);
+  const [refreshUpdate, setRefreshUpdate] = useState(false);
+  const [refreshFeature, setRefreshFeature] = useState(false);
+  const [searchKeyData, setSearchKeyData] = useState('');
+  const [featureIdd, setFeatureIdd] = useState('');
 
-const [currentPage, setCurrentPage] = useState(1);
-const [itemsPerPage, setItemsPerPage] = useState(10); // Change this value as needed
-const [totalItems, setTotalItems] = useState(0);
+  // Pagination
 
-// Pagination
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [pageNo, setPageNo] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
 
 
-useEffect(() => {
-  getAllSpecialFeature();
-}, [token, refreshDelete, refreshUpdate , refreshFeature , PerDataBySpeFeaId])
+  useEffect(() => {
+    getAllSpecialFeature();
+  }, [token, refreshDelete, refreshUpdate, refreshFeature, PerDataBySpeFeaId, pageNo])
 
-const PageRefreshOnDelete = () => {
-  setDeleteWarning(!DeleteWarning);
-  setRefreshDelete(!refreshDelete);
-}
+  const handlePageClick = (event) => {
+    setPageNo(event.selected + 1); // as event start from 0 index
+  };
 
-const PageRefreshOnUpdate = () => {
-  setEditBundleWarn(!EditBundleWarn)
-  setRefreshUpdate(!refreshUpdate);
-}
-
-const PageRefreshFeature = () => {
-  setEditFeatureWarn(!EditFeatureWarn);
-  setRefreshFeature(!refreshFeature);
-}
-
-const getAllSpecialFeature = async() => {
-  try{
-    setloaderState(true);
-    var response = await getAllSpeFeatApi(searchKeyData);
-    if(response?.status===200){
-      if(response?.data?.status==='success'){
-        setloaderState(false);
-        setAllSpeFeature(response?.data?.addons);
-        setTotalItems(response?.data?.totalFeatures)
-        toast.success(response?.data?.msg)
-      }
-    }
-    else{
-      console.log(response?.data?.msg);
-    }
+  const PageRefreshOnDelete = () => {
+    setDeleteWarning(!DeleteWarning);
+    setRefreshDelete(!refreshDelete);
   }
-  catch{
 
+  const PageRefreshOnUpdate = () => {
+    setEditBundleWarn(!EditBundleWarn)
+    setRefreshUpdate(!refreshUpdate);
   }
-}
 
-const getPermBySpeFeaId = async(FeatureId, FeatureName) => {
-  try{
-    console.log(FeatureId)
-    setFeatureIdd(FeatureId)
-    setEditNamePerBySpeFeaId(FeatureName);
-    var response = await getPermBySpeFeaIdApi(FeatureId);
-    if(response?.status===200){
-      if(response?.data?.status==='success'){
-         setPerDataBySpeFeaId(response?.data?.permissions);
-      }
-    }
-    else{
-      console.log(response?.data?.msg);
-    }
+  const PageRefreshFeature = () => {
+    setEditFeatureWarn(!EditFeatureWarn);
+    setRefreshFeature(!refreshFeature);
   }
-  catch{
 
-  }
-}
-
-const UpdateSpeFeaName = async() => {
-  if(validateFields){
-    try{
-      console.log(EditBundleId, 'feature Id')
-      const data = {
-        "featureName": newBundleName !== '' ? newBundleName : EditBundleName
-      }
-      console.log(data)
-      var response = await updateSpeFeaNameApi(EditBundleId, data);
-      if(response?.status===200){
-        console.log('200')
-        if(response?.data?.status==='success'){
-          console.log(response?.data?.msg)
-          setEditBundleWarn(!EditBundleWarn)
-          console.log('success')
-          // setPerDataBySpeFeaId(response?.data?.permissions)
-        }
-        else{
-          console.log(response?.data?.msg)
+  const getAllSpecialFeature = async () => {
+    try {
+      setloaderState(true);
+      var response = await getAllSpeFeatApi(searchKeyData, pageNo, pageSize);
+      if (response?.status === 200) {
+        if (response?.data?.status === 'success') {
+          setloaderState(false);
+          setAllSpeFeature(response?.data?.addons);
+          setCurrentPage(response?.data?.currentPage)
+          setTotalPages(response?.data?.totalPages)
+          toast.success(response?.data?.msg)
         }
       }
-      else{
+      else {
         console.log(response?.data?.msg);
       }
     }
-    catch{
-  
+    catch {
+
     }
   }
-}
 
-const removePerBySpeFeaId = async(permId) => {
-  try {
-    var response = await deletePerByidApi(permId);
-    if (response?.status === 200) {
-      if(response.data.status==='success'){
-        toast.success(response?.data?.msg)
-        getPermBySpeFeaId(featureIdd);
-      }
-    } 
-    else {
-      toast.error(response?.error);
-    }
-  }
-  catch (error) {
-      console.error('Error during login:', error);
-  }
-}
-
-const deleteSpeFeaById = async(speFeaID) => {
-  if(isChecked){
+  const getPermBySpeFeaId = async (FeatureId, FeatureName) => {
     try {
-      var response = await deleteSpeFeaByidApi(speFeaID);
+      console.log(FeatureId)
+      setFeatureIdd(FeatureId)
+      setEditNamePerBySpeFeaId(FeatureName);
+      var response = await getPermBySpeFeaIdApi(FeatureId);
       if (response?.status === 200) {
-        if(response.data.status==='success'){
-          setDeleteWarning(!DeleteWarning)
-          toast.success(response?.data?.msg)
+        if (response?.data?.status === 'success') {
+          setPerDataBySpeFeaId(response?.data?.permissions);
         }
-      } 
+      }
+      else {
+        console.log(response?.data?.msg);
+      }
+    }
+    catch {
+
+    }
+  }
+
+  const UpdateSpeFeaName = async () => {
+    if (validateFields) {
+      try {
+        console.log(EditBundleId, 'feature Id')
+        const data = {
+          "featureName": newBundleName !== '' ? newBundleName : EditBundleName
+        }
+        console.log(data)
+        var response = await updateSpeFeaNameApi(EditBundleId, data);
+        if (response?.status === 200) {
+          console.log('200')
+          if (response?.data?.status === 'success') {
+            console.log(response?.data?.msg)
+            setEditBundleWarn(!EditBundleWarn)
+            console.log('success')
+            // setPerDataBySpeFeaId(response?.data?.permissions)
+          }
+          else {
+            console.log(response?.data?.msg)
+          }
+        }
+        else {
+          console.log(response?.data?.msg);
+        }
+      }
+      catch {
+
+      }
+    }
+  }
+
+  const removePerBySpeFeaId = async (permId) => {
+    try {
+      var response = await deletePerByidApi(permId);
+      if (response?.status === 200) {
+        if (response.data.status === 'success') {
+          toast.success(response?.data?.msg)
+          getPermBySpeFeaId(featureIdd);
+        }
+      }
       else {
         toast.error(response?.error);
       }
     }
     catch (error) {
-        console.error('Error during login:', error);
+      console.error('Error during login:', error);
     }
   }
-}
 
-const EditFeatureBtnClicked = () => {
-  setEditFeatureWarn(!EditFeatureWarn)
-}
-
-const updatingBundleName = (e) => {
-  setNewBundleName(e)
-  setNewBundleNameError(validateTextFields(e))
-}
-
-
-const validateFields = () => {
-  let isValid = true;
-
-  if (!statuss) {
-    setStatusError('* Status is required');
-    isValid = false;
-  } else {
-    setStatusError('');
+  const deleteSpeFeaById = async (speFeaID) => {
+    if (isChecked) {
+      try {
+        var response = await deleteSpeFeaByidApi(speFeaID);
+        if (response?.status === 200) {
+          if (response.data.status === 'success') {
+            setDeleteWarning(!DeleteWarning)
+            toast.success(response?.data?.msg)
+          }
+        }
+        else {
+          toast.error(response?.error);
+        }
+      }
+      catch (error) {
+        console.error('Error during login:', error);
+      }
+    }
   }
 
-  return isValid;
-};
-
-const textAlphaRegex = /^[A-Za-z0-9\s]+$/;
-
-const validateTextFields = (value) => {
-  if (!value.trim()) {
-    return '*This Field is required';
-  } else if (!textAlphaRegex.test(value)) {
-    return 'Invalid characters in name !!';
-  }
-  return '';
-};
-
-
-
-  // **************************************   Pagination   *************************************************
-
-  const indexOfLastItem = currentPage * itemsPerPage;
-  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentItems = allSpeFeature.slice(indexOfFirstItem, indexOfLastItem);
-
-  // Change page
-  const paginate = (pageNumber) => setCurrentPage(pageNumber);
-
-  // Pagination links/buttons
-  const pageNumbers = [];
-  for (let i = 1; i <= Math.ceil(totalItems / itemsPerPage); i++) {
-    pageNumbers.push(i);
+  const EditFeatureBtnClicked = () => {
+    setEditFeatureWarn(!EditFeatureWarn)
   }
 
-  // **************************************   Pagination   *************************************************
+  const updatingBundleName = (e) => {
+    setNewBundleName(e)
+    setNewBundleNameError(validateTextFields(e))
+  }
 
+
+  const validateFields = () => {
+    let isValid = true;
+
+    if (!statuss) {
+      setStatusError('* Status is required');
+      isValid = false;
+    } else {
+      setStatusError('');
+    }
+
+    return isValid;
+  };
+
+  const textAlphaRegex = /^[A-Za-z0-9\s]+$/;
+
+  const validateTextFields = (value) => {
+    if (!value.trim()) {
+      return '*This Field is required';
+    } else if (!textAlphaRegex.test(value)) {
+      return 'Invalid characters in name !!';
+    }
+    return '';
+  };
 
 
   return (
-      <>
-        <ContainerCSS>
-          {
-            loaderState && (
-              <DataLoader />
-            )
-          }
-          <div className="container-fluid ps-3 pe-3 pt-2 pb-2">
-            <div className="row pt-3">
-              <div className="col-lg-7 col-md-8 col-sm-12 flex-frow-1">
-                  <div className="row">
-                    <nav className='breadcrumnav' aria-label="breadcrumb">
-                      <ol className="breadcrumb">
-                        <li className="breadcrumb-item"><Link to="#" className='greyText text-decoration-none'><h3>Home &gt; </h3></Link></li>
-                        <li className="breadcrumb-item active greenText" aria-current="page"><h3> Addon</h3></li>
-                      </ol>
-                    </nav>
-                  </div>
-                  <div className="row mb-3 for-margin-top"><h2>Manage Addons</h2></div>
+    <>
+      <ContainerCSS>
+        {
+          loaderState && (
+            <DataLoader />
+          )
+        }
+        <div className="container-fluid ps-3 pe-3 pt-2 pb-2">
+          <div className="row pt-3">
+            <div className="col-lg-7 col-md-8 col-sm-12 flex-frow-1">
+              <div className="row">
+                <nav className='breadcrumnav' aria-label="breadcrumb">
+                  <ol className="breadcrumb">
+                    <li className="breadcrumb-item"><Link to="#" className='greyText text-decoration-none'><h3>Home &gt; </h3></Link></li>
+                    <li className="breadcrumb-item active greenText" aria-current="page"><h3> Addon</h3></li>
+                  </ol>
+                </nav>
               </div>
-              <div className="col-lg-5 col-md-8 col-sm-12">
-                <div className="row">
-                  <div className="col-md-9 col-sm-6">
-                   <div className="row">
-                   <form className="d-flex h-100" role="search">
-                      <input className="form-control formcontrolsearch" type="search" placeholder="Search" aria-label="Search" onChange={(e)=> setSearchKeyData(e.target.value)}/>
+              <div className="row mb-3 for-margin-top"><h2>Manage Addons</h2></div>
+            </div>
+            <div className="col-lg-5 col-md-8 col-sm-12">
+              <div className="row">
+                <div className="col-md-9 col-sm-6">
+                  <div className="row">
+                    <form className="d-flex h-100" role="search">
+                      <input className="form-control formcontrolsearch" type="search" placeholder="Search" aria-label="Search" onChange={(e) => setSearchKeyData(e.target.value)} />
                       <button className="btn searchButtons text-white" type="button" onClick={getAllSpecialFeature}><h2>Search</h2></button>
                     </form>
-                   </div>
                   </div>
-                  <div className="col-md-3 col-sm-6 text-end">
-                    <div className="row">
+                </div>
+                <div className="col-md-3 col-sm-6 text-end">
+                  <div className="row">
                     <Link className="btn ps-0 pe-0 addButtons text-white" type="submit" to='/addAddons'><h2 className='textVerticalCenter'>+ ADD Addon</h2></Link>
-                    </div>
                   </div>
                 </div>
               </div>
             </div>
-            
-            <div className="row ps-2 pe-2">
-              <div className="overflow-scroll cardradius bg-white p-3">
-                <table className="table align-middle table-striped">
-                  <thead>
-                  
-                    <tr>
-                      <th><h2>#</h2></th>
-                      <th><h2>Bundle Name</h2></th>
-                      <th><h2>Feature</h2></th>
-                      <th><h2>Status <img src="./images/StatusArrow.svg" alt="" /></h2></th>
-                      <th><h2>Action</h2></th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {currentItems.map((item, index)=>(
-                      <tr key={item.planFeatureId}>
-                        <th className='greyText'><h3>{(currentPage - 1) * itemsPerPage + index + 1}</h3></th>
-                        <td className='greyText'><h3>{item.featureName}</h3></td>
-                        <td className='greyText'><h3>{item.feaPermission.map(permission => permission.perName).join(', ')}</h3></td>
-                        <td>{item.status? <h3 className='activeText'> Active </h3>: <h3 className='deactiveText'> InActive </h3>}</td>
-                        <td>
-                          <div className="dropdown">
-                            <button className="btn btn-sm actionButtons dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                              <span>Action</span>
-                            </button>
-                            <ul className="dropdown-menu">
-                              {/* <li className='p-1'>
+          </div>
+
+          <div className="row ps-2 pe-2">
+            <div className="overflow-scroll cardradius bg-white p-3">
+              <table className="table align-middle table-striped">
+                <thead>
+
+                  <tr>
+                    <th><h2>#</h2></th>
+                    <th><h2>Bundle Name</h2></th>
+                    <th><h2>Feature</h2></th>
+                    <th><h2>Status <img src="./images/StatusArrow.svg" alt="" /></h2></th>
+                    <th><h2>Action</h2></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {allSpeFeature.map((item, index) => (
+                    <tr key={item.planFeatureId}>
+                      <th className='greyText'><h3>{index + 1}</h3></th>
+                      <td className='greyText'><h3>{item.featureName}</h3></td>
+                      <td className='greyText'><h3>{item.feaPermission.map(permission => permission.perName).join(', ')}</h3></td>
+                      <td>{item.status ? <h3 className='activeText'> Active </h3> : <h3 className='deactiveText'> InActive </h3>}</td>
+                      <td>
+                        <div className="dropdown">
+                          <button className="btn btn-sm actionButtons dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <span>Action</span>
+                          </button>
+                          <ul className="dropdown-menu">
+                            {/* <li className='p-1'>
                                 <button className="dropdown-item greyText" type="button" data-bs-toggle="offcanvas" data-bs-target="#Edit_addon" aria-controls="Edit_addon">
                                   Edit Addon
                                 </button>
                               </li> */}
-                              <li className='p-1'>
-                                <button className="dropdown-item greyText" type="button" data-bs-toggle="offcanvas" data-bs-target="#Edit_bundle" aria-controls="Edit_bundle" onClick={(e) => {setEditBundleName(item.featureName),setEditBundleId(item.planFeatureId)}}>
-                                  Edit Bundle
-                                </button>
-                              </li>
-                              <li className='p-1'>
-                                <button className="dropdown-item greyText" type="button" data-bs-toggle="offcanvas" data-bs-target="#Edit_feature" aria-controls="Edit_feature" onClick={(e)=> getPermBySpeFeaId(item.planFeatureId, item.featureName)}>
-                                  Edit Feature
-                                </button>
-                              </li>
-                              <li className='p-1'>
-                                {/* <button className="dropdown-item" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight" aria-controls="offcanvasRight">Delete</button> */}
-                                <button className="dropdown-item greyText" type="button" data-bs-toggle="offcanvas" data-bs-target="#Delete_staticBackdrop" aria-controls="Delete_staticBackdrop" onClick={() => setdeletFeatureId(item.planFeatureId)}>
-                                  Delete
-                                </button>
-                              </li>
-                            </ul>
-                          </div>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+                            <li className='p-1'>
+                              <button className="dropdown-item greyText" type="button" data-bs-toggle="offcanvas" data-bs-target="#Edit_bundle" aria-controls="Edit_bundle" onClick={(e) => { setEditBundleName(item.featureName), setEditBundleId(item.planFeatureId) }}>
+                                Edit Bundle
+                              </button>
+                            </li>
+                            <li className='p-1'>
+                              <button className="dropdown-item greyText" type="button" data-bs-toggle="offcanvas" data-bs-target="#Edit_feature" aria-controls="Edit_feature" onClick={(e) => getPermBySpeFeaId(item.planFeatureId, item.featureName)}>
+                                Edit Feature
+                              </button>
+                            </li>
+                            <li className='p-1'>
+                              {/* <button className="dropdown-item" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight" aria-controls="offcanvasRight">Delete</button> */}
+                              <button className="dropdown-item greyText" type="button" data-bs-toggle="offcanvas" data-bs-target="#Delete_staticBackdrop" aria-controls="Delete_staticBackdrop" onClick={() => setdeletFeatureId(item.planFeatureId)}>
+                                Delete
+                              </button>
+                            </li>
+                          </ul>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
 
-                <div className="d-flex">
-                  <div className="ms-auto">
-                    <ul className="pagination">
-                      {pageNumbers.map((number) => (
-                        <li key={number} className="page-item">
-                          <button
-                            className={`btn me-2 ${currentPage === number ? 'activeBtn' : 'page-link '}`}
-                            onClick={() => paginate(number)}
-                          >
-                            {number}
-                          </button>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
+              <div className="d-flex">
+                <p className='font14'>Showing {currentPage} of {totalPages} Pages</p>
+                <div className="ms-auto">
+                  <ReactPaginate
+                    previousLabel={<Icon icon="tabler:chevrons-left" width="1.4em" height="1.4em" />}
+                    nextLabel={<Icon icon="tabler:chevrons-right" width="1.4em" height="1.4em" />}
+                    breakLabel={'...'} 
+                    breakClassName={'break-me'} 
+                    pageCount={totalPages} 
+                    marginPagesDisplayed={2} 
+                    pageRangeDisplayed={10}
+                    onPageChange={handlePageClick} 
+                    containerClassName={'pagination'} 
+                    subContainerClassName={'pages pagination'} 
+                    activeClassName={'active'}
+                  />
                 </div>
-
               </div>
+
             </div>
+          </div>
 
 
 
 
 
-  {/* ***********************************************************************************************************************************************************************************/}
-  {/* ***********************************************************************************************************************************************************************************/}
-{/* 
+          {/* ***********************************************************************************************************************************************************************************/}
+          {/* ***********************************************************************************************************************************************************************************/}
+          {/* 
           <div className="offcanvas offcanvas-end p-2" data-bs-backdrop="static" tabIndex="-1" id="Edit_addon" aria-labelledby="staticBackdropLabel">
             <div className="offcanvas-header modalHighborder p-1">
               <Link type="button" data-bs-dismiss="offcanvas" aria-label="Close">
@@ -533,8 +520,8 @@ const validateTextFields = (value) => {
           </div> */}
 
 
-  {/* ***********************************************************************************************************************************************************************************/}
-  {/* ***********************************************************************************************************************************************************************************/}
+          {/* ***********************************************************************************************************************************************************************************/}
+          {/* ***********************************************************************************************************************************************************************************/}
 
           <div className="offcanvas offcanvas-end p-2" data-bs-backdrop="static" tabIndex="-1" id="Edit_bundle" aria-labelledby="staticBackdropLabel">
             <div className="offcanvas-header modalHighborder p-1">
@@ -548,44 +535,44 @@ const validateTextFields = (value) => {
             <div className="offcanvas-body p-0">
               <div>
                 {EditBundleWarn
-                  ? 
-                    <>
-                      <div className="p-3">
-                        <form>
-                          <div className="mb-3">
-                            <label htmlFor="BundleName" className="form-label greyText">Bundle Name</label>
-                            <input type="text" className={`form-control p-2 formcontrolinput ${newBundleNameError ? 'border border-danger' : ''}`} id="BundleName" defaultValue={EditBundleName} onChange={(e)=> updatingBundleName(e.target.value)}/>
-                            <span className='text-danger'>{newBundleNameError}</span>
-                          </div>
-                        </form>
-                        <p className='text-center p-3'>
-                          <button className='btn updateButtons text-white' onClick={(e) => UpdateSpeFeaName(e)}>Update</button> 
-                          <button className='btn cancelButtons ms-3' data-bs-dismiss="offcanvas" aria-label="Close">Cancel</button>
-                        </p>
-                      </div>
-                    </>
-                  :
-                    <>
-                      <div>
-                        <p className='modalLightBorder p-2 mb-0'>Bundle Name</p>
-                        <div className="mt-3  ">
-                          <div className='correvtSVG p-3 pt-4 rounded-circle'><img src="./images/Correct.svg" alt="" /></div>
-                          <div className="updatetext border m-4 border-2  ms-5 greydiv rounded-3 text-center greyText p-5">
-                            <p className='warningHeading'>Successful Updated</p>
-                            <p className='greyText warningText pt-2'>Your Changes has been<br />Successfully Saved</p>
-                          </div>
-                            <button className='btn contbtn continueButtons text-white' data-bs-dismiss="offcanvas" aria-label="Close" onClick={PageRefreshOnUpdate}>Continue</button>
+                  ?
+                  <>
+                    <div className="p-3">
+                      <form>
+                        <div className="mb-3">
+                          <label htmlFor="BundleName" className="form-label greyText">Bundle Name</label>
+                          <input type="text" className={`form-control p-2 formcontrolinput ${newBundleNameError ? 'border border-danger' : ''}`} id="BundleName" defaultValue={EditBundleName} onChange={(e) => updatingBundleName(e.target.value)} />
+                          <span className='text-danger'>{newBundleNameError}</span>
                         </div>
+                      </form>
+                      <p className='text-center p-3'>
+                        <button className='btn updateButtons text-white' onClick={(e) => UpdateSpeFeaName(e)}>Update</button>
+                        <button className='btn cancelButtons ms-3' data-bs-dismiss="offcanvas" aria-label="Close">Cancel</button>
+                      </p>
+                    </div>
+                  </>
+                  :
+                  <>
+                    <div>
+                      <p className='modalLightBorder p-2 mb-0'>Bundle Name</p>
+                      <div className="mt-3  ">
+                        <div className='correvtSVG p-3 pt-4 rounded-circle'><img src="./images/Correct.svg" alt="" /></div>
+                        <div className="updatetext border m-4 border-2  ms-5 greydiv rounded-3 text-center greyText p-5">
+                          <p className='warningHeading'>Successful Updated</p>
+                          <p className='greyText warningText pt-2'>Your Changes has been<br />Successfully Saved</p>
+                        </div>
+                        <button className='btn contbtn continueButtons text-white' data-bs-dismiss="offcanvas" aria-label="Close" onClick={PageRefreshOnUpdate}>Continue</button>
                       </div>
-                    </>
+                    </div>
+                  </>
                 }
               </div>
-          </div>
+            </div>
           </div>
 
 
-  {/* ***********************************************************************************************************************************************************************************/}
-  {/* ***********************************************************************************************************************************************************************************/}
+          {/* ***********************************************************************************************************************************************************************************/}
+          {/* ***********************************************************************************************************************************************************************************/}
 
           <div className="offcanvas offcanvas-end p-2" data-bs-backdrop="static" tabIndex="-1" id="Edit_feature" aria-labelledby="staticBackdropLabel">
             <div className="offcanvas-header modalHighborder p-1">
@@ -599,55 +586,55 @@ const validateTextFields = (value) => {
             <div className="offcanvas-body p-0">
               <div>
                 {EditFeatureWarn
-                  ? 
-                    <>
-                      <div>
-                        <div className="modalLightBorder d-flex p-2">
-                          <div className="p-2"><h3 className='greyText'>Bundle Name</h3></div>
-                          <div className="ms-auto p-2"><h3 className='successText'>HR Management</h3></div>
-                        </div>
-                        <div className="p-3">
-                          <h3 className='greyText'>Features</h3>
-                          {PerDataBySpeFeaId.map((item) => (
-                            <>
+                  ?
+                  <>
+                    <div>
+                      <div className="modalLightBorder d-flex p-2">
+                        <div className="p-2"><h3 className='greyText'>Bundle Name</h3></div>
+                        <div className="ms-auto p-2"><h3 className='successText'>HR Management</h3></div>
+                      </div>
+                      <div className="p-3">
+                        <h3 className='greyText'>Features</h3>
+                        {PerDataBySpeFeaId.map((item) => (
+                          <>
                             <div className="d-flex mt-3 border p-2">
                               <div className=" flex-grow-1"><h3>{item.perName}</h3></div>
-                              <div className=""><h3 onClick={()=> removePerBySpeFeaId(item.feaPerId)} style={{cursor: 'pointer'}}><Icon icon="bitcoin-icons:cross-outline" width="1.5em" height="1.5em"  style={{color: 'black'}} /></h3></div>
+                              <div className=""><h3 onClick={() => removePerBySpeFeaId(item.feaPerId)} style={{ cursor: 'pointer' }}><Icon icon="bitcoin-icons:cross-outline" width="1.5em" height="1.5em" style={{ color: 'black' }} /></h3></div>
                             </div>
-                            </>
-                          ))}
-                          <p className='text-center p-3'>
-                            <button className='btn updateButtons text-white' onClick={() => EditFeatureBtnClicked()}>Update</button>
-                            <button className='btn cancelButtons ms-3' data-bs-dismiss="offcanvas" aria-label="Close">Cancel</button>
-                          </p>
-                        </div>
+                          </>
+                        ))}
+                        <p className='text-center p-3'>
+                          <button className='btn updateButtons text-white' onClick={() => EditFeatureBtnClicked()}>Update</button>
+                          <button className='btn cancelButtons ms-3' data-bs-dismiss="offcanvas" aria-label="Close">Cancel</button>
+                        </p>
                       </div>
-                    </>
+                    </div>
+                  </>
                   :
-                    <>
-                      <div>
-                        <p className='modalLightBorder p-2 mb-0'>Bundle Name</p>
-                        <div className="mt-3  ">
-                          <div className='correvtSVG p-3 pt-4 rounded-circle'><img src="./images/Correct.svg" alt="" /></div>
-                          <div className="updatetext border m-4 border-2  ms-5 greydiv rounded-3 text-center greyText p-5">
-                            <p className='warningHeading'>Successful Updated</p>
-                            <p className='greyText warningText pt-2'>Your Changes has been<br />Successfully Saved</p>
-                          </div>
-                            <button className='btn contbtn continueButtons text-white' data-bs-dismiss="offcanvas" aria-label="Close" onClick={PageRefreshFeature}>Continue</button>
+                  <>
+                    <div>
+                      <p className='modalLightBorder p-2 mb-0'>Bundle Name</p>
+                      <div className="mt-3  ">
+                        <div className='correvtSVG p-3 pt-4 rounded-circle'><img src="./images/Correct.svg" alt="" /></div>
+                        <div className="updatetext border m-4 border-2  ms-5 greydiv rounded-3 text-center greyText p-5">
+                          <p className='warningHeading'>Successful Updated</p>
+                          <p className='greyText warningText pt-2'>Your Changes has been<br />Successfully Saved</p>
                         </div>
+                        <button className='btn contbtn continueButtons text-white' data-bs-dismiss="offcanvas" aria-label="Close" onClick={PageRefreshFeature}>Continue</button>
                       </div>
-                    </>
+                    </div>
+                  </>
                 }
               </div>
+            </div>
           </div>
-          </div>
 
 
-  {/* ***********************************************************************************************************************************************************************************/}
-  {/* ***********************************************************************************************************************************************************************************/}
+          {/* ***********************************************************************************************************************************************************************************/}
+          {/* ***********************************************************************************************************************************************************************************/}
 
 
-          
+
           <div className="offcanvas offcanvas-end p-2" data-bs-backdrop="static" tabIndex="-1" id="Delete_staticBackdrop" aria-labelledby="staticBackdropLabel">
             <div className="offcanvas-header ps-0 modalHighborder p-1">
               <Link type="button" data-bs-dismiss="offcanvas" aria-label="Close">
@@ -659,44 +646,44 @@ const validateTextFields = (value) => {
             </div>
             <div className="offcanvas-body p-0">
               <div>
-              {DeleteWarning
-                ?
+                {DeleteWarning
+                  ?
                   <>
                     <div className=''>
                       <p className='modalLightBorder p-2'>School List</p>
                       <p className='text-center p-3'> <img src="./images/errorI.svg" className='img-fluid' alt="" /></p>
                       <p className='text-center warningHeading'>Are you Sure?</p>
-                      <p className='text-center greyText warningText pt-2'>This Action will be permanently delete<br/>the Profile Data</p>
-                      <p className='text-center warningText p-2'><input className="form-check-input formdltcheck me-2" type="checkbox" value="" id="flexCheckChecked" onChange={(e) => setIsChecked(e.target.checked)}/>I Agree to delete the Profile Data</p>
+                      <p className='text-center greyText warningText pt-2'>This Action will be permanently delete<br />the Profile Data</p>
+                      <p className='text-center warningText p-2'><input className="form-check-input formdltcheck me-2" type="checkbox" value="" id="flexCheckChecked" onChange={(e) => setIsChecked(e.target.checked)} />I Agree to delete the Profile Data</p>
                       <p className='text-center p-3'>
                         <button className='btn deleteButtons text-white' onClick={() => deleteSpeFeaById(deletFeatureId)}>Delete</button>
                         <button className='btn dltcancelButtons ms-3' data-bs-dismiss="offcanvas" aria-label="Close">Cancel</button>
                       </p>
                     </div>
                   </>
-                :
+                  :
                   <>
                     <div >
                       <p className='border-bottom p-3'>School List</p>
                       <div className="">
                         <div className='deleteSVG border border-2 p-4 rounded-circle'><img src="./images/deleteicon.svg" alt="" /></div>
                         <div className="deletetext border m-4 border-2 greydiv ms-5 rounded-3 text-center greyText p-5">
-                            <p className='warningHeading'>Successful Deleted</p>
-                            <p className='greyText warningText pt-2'>Your data has been<br/>Successfully Delete</p>
+                          <p className='warningHeading'>Successful Deleted</p>
+                          <p className='greyText warningText pt-2'>Your data has been<br />Successfully Delete</p>
                         </div>
                         <button className='btn contbtn continueButtons text-white' data-bs-dismiss="offcanvas" aria-label="Close" onClick={PageRefreshOnDelete}>Continue</button>
                       </div>
                     </div>
                   </>
-              }
+                }
               </div>
             </div>
           </div>
 
-<Toaster/>
-          </div>
-        </ContainerCSS>
-      </>
+          <Toaster />
+        </div>
+      </ContainerCSS>
+    </>
   )
 }
 

@@ -2,9 +2,10 @@ import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom';
 import styled from 'styled-components'
 import toast, { Toaster } from 'react-hot-toast';
-import { deleteSchoolApi, getAllActiveInActiveSpeFeatApi, getAllPlanApi, getAllSpeFeatApi, getPlanInFeatureApi, getSchoolDataApi, getSchoolDataByIdApi, updateSchoolApi } from '../Utils/Apis';
+import { deleteSchoolApi, getAllActiveInActiveSpeFeatApi, getAllPlanApi, getSchoolDataApi, getSchoolDataByIdApi, updateSchoolApi, updateSpecialFeatureInSchoolApi } from '../Utils/Apis';
 import { Icon } from '@iconify/react';
 import DataLoader from '../Layouts/Loader';
+import ReactPaginate from 'react-paginate';
 
 const Container = styled.div`
   height: 92vh;
@@ -140,13 +141,10 @@ const AllSchools = () => {
   //loader State
   const [loaderState, setloaderState] = useState(false);
 
-  // Pagination
-
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(5); // Change this value as needed
-  const [totalItems, setTotalItems] = useState(0);
-
-  // Pagination
+  const [totalPages, setTotalPages] = useState(1);
+  const [pageNo, setPageNo] = useState(1);
+  const [pageSize, setPageSize] = useState(5);
 
   // const [searchKeyData, setSearchKeyData] = useState('');
 
@@ -166,7 +164,7 @@ const AllSchools = () => {
   const [allPlans, setAllPlan] = useState([])
   const [viewFeaturesData, setViewFeaturesData] = useState([])
 
-  const [isCheckedFeature, setIsCheckedFeature] = useState(false);
+  // const [isCheckedFeature, setIsCheckedFeature] = useState(false);
 
   const [DeleteWarning, setDeleteWarning] = useState(true);
   const [EditWarning, setEditWarning] = useState(true);
@@ -189,12 +187,20 @@ const AllSchools = () => {
   const [refreshSpeFeaUpdate, setRefreshSpeFeaUpdate] = useState(false);
 
   const [searchKeyData, setSearchKeyData] = useState('');
+  const [isCheckedFeature, setIsCheckedFeature] = useState([]);
+  const [addFeature, setAddFeature] = useState([]);
+  const [removeFeature, setRemoveFeature] = useState([]);
+  const [currentSchoolPlanId, setCurrentSchoolPlanId] = useState();
+
 
   useEffect(() => {
     getAllSchoolData();
-    getAllSpeFeatApi();
     getAllPlans();
-  }, [token, refreshDelete, refreshUpdate, refreshPage, currentPage])//, schoolData, allPlans
+  }, [token, refreshDelete, refreshUpdate, refreshPage, currentPage, pageNo])//, schoolData, allPlans
+
+  const handlePageClick = (event) => {
+    setPageNo(event.selected + 1); // as event start from 0 index
+  };
 
   const PageRefresh = () => {
     setUpdateSpecialFeatureWarning(!UpdateSpecialFeatureWarning);
@@ -221,32 +227,27 @@ const AllSchools = () => {
     setDeleteSchoolId(id)
   }
 
-  const SpeFeatBtnClicked = () => {
-    setSpecialFeatureWarning(!SpecialFeatureWarning)
-  }
-
-  const handleCheckboxChange = (id) => {
-    setIsCheckedFeature(!isCheckedFeature);
-    setUpdateFeatureId(id)
-    UpdateFeatureInPlan()
-  };
-
   const UpdateFeatureInPlan = async () => {
-    console.log(id)
     try {
-      const data = updateFeatureId;
-      var response = await getPlanInFeatureApi(id, data);
+      const data = {
+        "addFeature": addFeature,
+        "removeFeature": removeFeature
+      }
+      console.log('3rd', data)
+      var response = await updateSpecialFeatureInSchoolApi(currentSchoolPlanId, data);
+      console.log(response)
       if (response?.status === 200) {
         if (response?.data?.status === 'success') {
           setUpadteSpeFeature(response?.data?.addons);
+          toast.success(response?.data?.message);
         }
       }
       else {
-        console.log(response?.data?.msg);
+        toast.error(response?.data?.message);
       }
     }
-    catch {
-
+    catch (error) {
+      console.log(error, 'error while adding')
     }
 
   }
@@ -254,18 +255,19 @@ const AllSchools = () => {
   const getAllSchoolData = async () => {
     try {
       setloaderState(true);
-      var response = await getSchoolDataApi(searchKeyData);
-      console.log(response, 'school data');
+      var response = await getSchoolDataApi(searchKeyData, pageNo, pageSize);
+      console.log(response)
       if (response?.status === 200) {
         if (response?.data?.status === 'success') {
           setloaderState(false);
           setSchoolData(response?.data?.schools);
-          setTotalItems(response?.data?.totalSchool)
+          setCurrentPage(response?.data?.currentPage)
+          setTotalPages(response?.data?.totalPages)
           toast.success(response.data.message)
         }
       }
       else {
-        console.log(response?.data?.msg);
+        console.log(response?.data?.message);
       }
     }
     catch {
@@ -275,9 +277,9 @@ const AllSchools = () => {
 
   const getSchoolDataById = async (id) => {
     try {
+      setloaderState(true);
       setupdateSchoolId(id)
       var response = await getSchoolDataByIdApi(id);
-      console.log(response, "Hello")
       if (response?.status === 200) {
         if (response?.data?.status === 'success') {
           setgetSchoolIdDataName(response?.data?.school?.schoolName);
@@ -287,11 +289,17 @@ const AllSchools = () => {
           setgetSchoolIdDataPackageId(response?.data?.school?.plans?.planId);
           setgetSchoolIdDataStatuus(response?.data?.school?.status);
           setSpeFeaDataBySchoolId(response?.data?.school?.plans?.usedAddons)
-          toast.success(response?.data?.msg)
+          toast.success(response?.data?.message)
+          setloaderState(false);
+        }
+        else{
+          toast.error('Error in loading')
+          setloaderState(false);
         }
       }
       else {
-        console.log(response?.data?.msg);
+        setloaderState(false);
+        console.log(response?.data?.message);
       }
     }
     catch {
@@ -312,7 +320,7 @@ const AllSchools = () => {
         if (response?.status === 200) {
           if (response.data.status === 'success') {
             setEditWarning(!EditWarning);
-            toast.success(response?.data?.msg)
+            toast.success(response?.data?.message)
           }
         } else {
           toast.error(response?.error);
@@ -330,7 +338,7 @@ const AllSchools = () => {
         if (response?.status === 200) {
           if (response.data.status === 'success') {
             setDeleteWarning(!DeleteWarning)
-            toast.success(response?.data?.msg)
+            toast.success(response?.data?.message)
           }
         }
         else {
@@ -343,60 +351,39 @@ const AllSchools = () => {
     }
   }
 
-  // const getTotalSpecialFeature = async() => {
-  //   setUpdateSpecialFeatureWarning(false); 
-  //   try{
-  //     var response = await getAllSpeFeatApi();
-  //     if(response?.status===200){
-  //       if(response?.data?.status==='success'){
-  //         setAllSpeFeature(response?.data?.addons);
-  //       }
-  //     }
-  //     else{
-  //       console.log(response?.data?.msg);
-  //     }
-  //   }
-  //   catch{
 
-  //   }
-  // }
-
-  const getAllActiveInActiveSpeFeat = async(planIdd) => {
-    // getSchoolDataById(planIdd);
-    setUpdateSpecialFeatureWarning(false); 
-    console.log('call 1')
-    try{
-      var response = await getAllActiveInActiveSpeFeatApi(planIdd);
-      console.log('200')
-
-      if(response?.status===200){
-        if(response?.data?.status==='success'){
+  const getAllActiveInActiveSpeFeat = async () => {
+    setUpdateSpecialFeatureWarning(false);
+    try {
+      var response = await getAllActiveInActiveSpeFeatApi(currentSchoolPlanId);
+      if (response?.status === 200) {
+        if (response?.data?.status === 'success') {
           console.log(response?.data?.planName)
           SetAllActiveInActiveSpeFeature(response?.data?.features);
         }
       }
-      else{
-        console.log(response?.data?.msg);
+      else {
+        console.log(response?.data?.message);
       }
     }
-    catch{
-      console.log('catch 1')
+    catch (error) {
+      console.log(error, 'catch 1')
     }
   }
 
 
   const getAllSpecialFeature = async (planIdd) => {
     try {
-      console.log(planIdd, 'planIdd')
+      setCurrentSchoolPlanId(planIdd);
       var response = await getAllActiveInActiveSpeFeatApi(planIdd);
       if (response?.status === 200) {
         if (response?.data?.status === 'success') {
-          toast.success(response?.data?.msg)
+          toast.success(response?.data?.message)
           SetAllActiveInActiveSpeFeature(response?.data?.features);
         }
       }
       else {
-        console.log(response?.data?.msg);
+        console.log(response?.data?.message);
       }
     }
     catch {
@@ -406,21 +393,43 @@ const AllSchools = () => {
 
   const getAllPlans = async () => {
     try {
-      var response = await getAllPlanApi();
+      const searchKey = ''
+      const pageNo = 1
+      const size = 10
+      var response = await getAllPlanApi(searchKey, pageNo, size);
       if (response?.status === 200) {
         if (response?.data?.status === 'success') {
           setAllPlan(response?.data?.plans);
-          toast.success(response?.data?.msg)
+          toast.success(response?.data?.message)
         }
       }
       else {
-        console.log(response?.data?.msg);
+        console.log(response?.data?.message);
       }
     }
     catch {
 
     }
   }
+
+
+  const handleCheckboxChange = (featureId) => {
+    setIsCheckedFeature((prev) => {
+      const isChecked = prev.includes(featureId);
+
+      if (isChecked) {
+        setRemoveFeature((prev) => [...prev, featureId]);
+        setAddFeature((prev) => prev.filter((id) => id !== featureId));
+        return prev.filter((id) => id !== featureId);
+      } else {
+        setAddFeature((prev) => [...prev, featureId]);
+        setRemoveFeature((prev) => prev.filter((id) => id !== featureId));
+        return [...prev, featureId];
+      }
+    });
+  };
+
+
 
 
   const handleAddressChange = (e) => {
@@ -509,25 +518,6 @@ const AllSchools = () => {
     return isValid;
   };
 
-
-  // **************************************   Pagination   *************************************************
-
-  const indexOfLastItem = currentPage * itemsPerPage;
-  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentItems = schoolData.slice(indexOfFirstItem, indexOfLastItem);
-
-  // Change page
-  const paginate = (pageNumber) => setCurrentPage(pageNumber);
-
-  // Pagination links/buttons
-  const pageNumbers = [];
-  for (let i = 1; i <= Math.ceil(totalItems / itemsPerPage); i++) {
-    pageNumbers.push(i);
-  }
-
-  // **************************************   Pagination   *************************************************
-
-
   return (
     <>
       <Container className='scrollHide'>
@@ -539,23 +529,29 @@ const AllSchools = () => {
         <div className="container-fluid ps-3 pe-3 pt-2 pb-2">
           <div className="row pt-2">
             <div className="col-lg-7 col-md-8 col-sm-12 flex-grow-1">
-              <nav className='breadcrumnav' aria-label="breadcrumb">
-                <ol className="breadcrumb">
-                  <li className="breadcrumb-item"><Link to="#" className='greyText text-decoration-none'><h2>Home &gt; </h2></Link></li>
-                  <li className="breadcrumb-item active greenText" aria-current="page"><h2> Schools</h2></li>
-                </ol>
-              </nav>
+              <div className="row">
+                <nav className='breadcrumnav' aria-label="breadcrumb">
+                  <ol className="breadcrumb">
+                    <li className="breadcrumb-item"><Link to="#" className='greyText text-decoration-none'><h2>Home &gt; </h2></Link></li>
+                    <li className="breadcrumb-item active greenText" aria-current="page"><h2> Schools</h2></li>
+                  </ol>
+                </nav>
+              </div>
             </div>
             <div className="col-lg-5 col-md-8 col-sm-12">
               <div className="row">
                 <div className="col-md-9 col-sm-6">
-                  <form className="d-flex" role="search">
-                    <input className="form-control formcontrolsearch" type="search" placeholder="Search" aria-label="Search" onChange={(e) => setSearchKeyData(e.target.value)} />
-                    <button className="btn searchButtons text-white" type="button" onClick={getAllSchoolData}><h2>Search</h2></button>
-                  </form>
+                  <div className="row">
+                    <form className="d-flex" role="search">
+                      <input className="form-control formcontrolsearch" type="search" placeholder="Search" aria-label="Search" onChange={(e) => setSearchKeyData(e.target.value)} />
+                      <button className="btn searchButtons text-white" type="button" onClick={getAllSchoolData}><h2>Search</h2></button>
+                    </form>
+                  </div>
                 </div>
-                <div className="col-md-3 col-sm-6 text-end ps-0">
-                  <Link className="btn ps-0 pe-0 addButtons text-white" type="submit" to='/addSchoolsPage'><h2 className='textVerticalCenter'>+ ADD Schools</h2></Link>
+                <div className="col-md-3 col-sm-6 text-end">
+                  <div className="row">
+                    <Link className="btn ps-0 pe-0 addButtons text-white" type="submit" to='/addSchoolsPage'><h2 className='textVerticalCenter'>+ ADD Schools</h2></Link>
+                  </div>
                 </div>
               </div>
             </div>
@@ -578,9 +574,9 @@ const AllSchools = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {currentItems.map((item, index) => (
+                  {schoolData.map((item, index) => (
                     <tr key={item.id} className='my-bg-color align-middle'>
-                      <th className='greyText'><h3>{(currentPage - 1) * itemsPerPage + index + 1}</h3></th>
+                      <th className='greyText'><h3>{index + 1}</h3></th>
                       <td className='greyText'><h3>{item.schoolName}</h3></td>
                       <td className='greyText'><h3>{item.schoolAddress}</h3></td>
                       <td className='greyText'><h3>{item.schoolPhone}</h3></td>
@@ -617,19 +613,14 @@ const AllSchools = () => {
               </table>
 
               <div className="d-flex">
+                <p className='font14'>Showing {currentPage} of {totalPages} Pages</p>
                 <div className="ms-auto">
-                  <ul className="pagination">
-                    {pageNumbers.map((number) => (
-                      <li key={number} className="page-item">
-                        <button
-                          className={`btn me-2 ${currentPage === number ? 'activeBtn' : 'page-link '}`}
-                          onClick={() => paginate(number)}
-                        >
-                          {number}
-                        </button>
-                      </li>
-                    ))}
-                  </ul>
+                  <ReactPaginate
+                    previousLabel={<Icon icon="tabler:chevrons-left" width="1.4em" height="1.4em" />}
+                    nextLabel={<Icon icon="tabler:chevrons-right" width="1.4em" height="1.4em" />}
+                    breakLabel={'...'} breakClassName={'break-me'} pageCount={totalPages} marginPagesDisplayed={2} pageRangeDisplayed={10}
+                    onPageChange={handlePageClick} containerClassName={'pagination'} subContainerClassName={'pages pagination'} activeClassName={'active'}
+                  />
                 </div>
               </div>
 
@@ -743,8 +734,7 @@ const AllSchools = () => {
                   ?
 
                   <>
-                    {UpdateSpecialFeatureWarning
-                      ?
+                    {UpdateSpecialFeatureWarning ? (
                       <>
                         <p className='modalLightBorder p-2 mb-0'>Special Features</p>
                         <div className="ps-3 pe-3">
@@ -752,28 +742,36 @@ const AllSchools = () => {
                             <thead>
                               <tr height='40px'>
                                 <th><h2>Details</h2></th>
-                                <td className='text-end'><Link className='greenText text-decoration-none' onClick={() => getAllActiveInActiveSpeFeat()}><h2>Add Features</h2></Link></td>
+                                <td className='text-end'>
+                                  <Link className='greenText text-decoration-none' onClick={getAllActiveInActiveSpeFeat}>
+                                    <h2>Add Features</h2>
+                                  </Link>
+                                </td>
                               </tr>
                             </thead>
                             <tbody>
-
-
                               {allActiveInActiveSpeFeature.map((item, index) => (
                                 <tr height='40px' key={index}>
                                   <td><h3 className='greyText ps-2'>{item?.featureName}</h3></td>
-                                  <td className='text-end'>{(item?.planStatus) ? <h3 className='p-1 pe-2'><Icon icon="simple-icons:ticktick" width="1.5em" height="1.5em" style={{ color: '#00A67E', cursor: 'pointer' }} /></h3> : <h3 className='ps-3'>---</h3>}</td>
+                                  <td className='text-end'>
+                                    {item?.planStatus ? (
+                                      <h3 className='p-1 pe-2'>
+                                        <Icon icon="simple-icons:ticktick" width="1.5em" height="1.5em" style={{ color: '#00A67E', cursor: 'pointer' }} />
+                                      </h3>
+                                    ) : (
+                                      <h3 className='ps-3'>---</h3>
+                                    )}
+                                  </td>
                                 </tr>
                               ))}
-
-
                             </tbody>
                           </table>
                           <p className='text-center p-3'>
-                            <button className='btn cancelButtons ms-3' onClick={PageRefresh}>Back</button>
+                            <button className='btn cancelButtons ms-3' onClick={getAllSchoolData}>Back</button>
                           </p>
                         </div>
                       </>
-                      :
+                    ) : (
                       <>
                         <p className='modalLightBorder p-2 mb-0'>Special Features</p>
                         <div className="ps-3 pe-3">
@@ -785,43 +783,37 @@ const AllSchools = () => {
                               </tr>
                             </thead>
                             <tbody>
-
-
                               {allActiveInActiveSpeFeature.map((item, index) => (
                                 <tr height='40px' key={index}>
                                   <td><h3 className='greyText ps-2'>{item?.featureName}</h3></td>
                                   <td className='text-end'>
-                                    {(item?.planStatus)
-                                      ?
+                                    {item?.planStatus ? (
                                       <h3 className='p-1 pe-1'>
                                         <Icon icon="ion:checkbox" width="1.5em" height="1.5em" style={{ color: '#00A67E', cursor: 'pointer' }} />
                                       </h3>
-                                      :
+                                    ) : (
                                       <h3 onClick={() => handleCheckboxChange(item.planFeatureId)}>
-                                        {isCheckedFeature
-                                          ?
-                                          <h3 className='p-1 pe-1'>
+                                        {isCheckedFeature.includes(item.planFeatureId) ? (
+                                          <p className='p-1 pe-1'>
                                             <Icon icon="ion:checkbox" width="1.5em" height="1.5em" style={{ color: '#00A67E', cursor: 'pointer' }} />
-                                          </h3>
-                                          :
+                                          </p>
+                                        ) : (
                                           <Icon icon="bxs:checkbox" width="2.1em" height="2.1em" style={{ color: '#fff', cursor: 'pointer' }} />
-                                        }
+                                        )}
                                       </h3>
-                                    }
+                                    )}
                                   </td>
                                 </tr>
                               ))}
-
-
                             </tbody>
                           </table>
                           <p className='text-center p-3'>
-                            <button className='btn updateButtons text-white' onClick={(e) => SpeFeatBtnClicked(false)}>Update</button>
-                            <button className='btn cancelButtons ms-3' data-bs-dismiss="offcanvas" aria-label="Close" onClick={PageRefresh}>Cancel</button>
+                            <button className='btn updateButtons text-white' onClick={UpdateFeatureInPlan}>Update</button>
+                            <button className='btn cancelButtons ms-3' data-bs-dismiss="offcanvas" aria-label="Close" onClick={getAllSchoolData}>Cancel</button>
                           </p>
                         </div>
                       </>
-                    }
+                    )}
                   </>
 
                   :

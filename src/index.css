@@ -103,6 +103,21 @@ li {
     color: var(--greenTextColor);
 }
 
+
+.formcontrolsearch {
+    border-radius: 5px 0px 0px 5px !important;
+    border: 1.5px solid var(--fontControlBorder);
+}
+
+.searchhhButtons {
+    border-radius: 0px 5px 5px 0px !important;
+    background-color: var(--greenTextColor) !important;
+    border: none !important ;
+    width: 90px;
+    height: 38px;
+}
+
+
 .bgHeaderModal{
     background-color: var(--modalHeadingBg);
 }
@@ -820,7 +835,43 @@ tr{
 
 
 
+/* // Pagination  */
 
 
+.pagination {
+    display: flex;
+    list-style: none;
+    padding: 0;
+}
 
-   
+.pagination li {
+    margin: 0 5px;
+}
+
+.pagination li a {
+    box-shadow: none !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    font-size: var(--font-size-14);
+    border-radius: 8px;
+    border: 1px solid #ddd;
+    text-decoration: none;
+    color: #000;
+    /* background-color: #f5f5f5;
+    transition: background-color 0.3s; */
+}
+
+.pagination li a:hover {
+    background-color: #317a77 !important;
+    color: #fff !important;
+}
+
+.pagination li.active a {
+    background-color: #317a77 !important;
+    color: #fff;
+    font-weight: bold;
+}
+

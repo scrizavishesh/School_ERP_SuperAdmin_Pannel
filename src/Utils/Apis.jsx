@@ -92,9 +92,9 @@ export const getDashDataApi = async() => {
 // ***************************************************************************************
 
 
-export const getSchoolDataApi = async(searchKeyData) => {
+export const getSchoolDataApi = async(searchKeyData, pageNo, pageSize) => {
     axios.defaults.headers.common["Authorization"] = token;
-    var res = await axios.get(`${Domain}/sch/getAllSchool?searchKey=${searchKeyData}`);
+    var res = await axios.get(`${Domain}/sch/getAllSchool?searchKey=${searchKeyData}&page=${pageNo}&size=${pageSize}`);
 
     if (res) {
         return res;
@@ -140,6 +140,16 @@ export const deleteSchoolApi = async (id) => {
     if (res) {
         return res;
     }else{
+        return [];
+    }
+}
+
+export const updateSpecialFeatureInSchoolApi = async (id, data) => {
+    axios.defaults.headers.common["Authorization"] = token;
+    var res = await axios.post(`192.168.20.109:5000/plan/addFeaByPlanId/${id}`, data );
+    if (res) {
+        return res;
+    }else{
        return [];
     }
 }
@@ -150,9 +160,9 @@ export const deleteSchoolApi = async (id) => {
 // ***************************************************************************************
 
 
-export const getAllPlanApi = async(searchKeyData) => {
+export const getAllPlanApi = async(searchKeyData, pageNo, size) => {
     axios.defaults.headers.common["Authorization"] = token;
-    var res = await axios.get(`${Domain}/plan/getAllPlan?searchKey=${searchKeyData}`);
+    var res = await axios.get(`${Domain}/plan/getAllPlan?searchKey=${searchKeyData}&pageNo=${pageNo}&size=${size}`);
 
     if (res) {
         return res;
@@ -221,9 +231,9 @@ export const getPlanInFeatureApi = async(planId, data) => {
     }
 }
 
-export const getAllSpeFeatApi = async(searchKeyData) => {
+export const getAllSpeFeatApi = async(searchKeyData, pageNo, pageSize) => {
     axios.defaults.headers.common["Authorization"] = token;
-    var res = await axios.get(`${Domain}/fea/getAllFeatures?searchKey=${searchKeyData}&pageSize=5&pageNo=1`);
+    var res = await axios.get(`${Domain}/fea/getAllFeatures?searchKey=${searchKeyData}&page=${pageNo}&size=${pageSize}`);
 
     if (res) {
         return res;
@@ -236,7 +246,6 @@ export const getAllSpeFeatApi = async(searchKeyData) => {
 
 export const getAllActiveInActiveSpeFeatApi = async(planIdd) => {
     axios.defaults.headers.common["Authorization"] = token;
-    console.log(planIdd,'call2')
     var res = await axios.get(`${Domain}/fea/getActiveUnActiveByPlan?planId=${planIdd}`);
 
     if (res) {
@@ -333,9 +342,9 @@ export const deleteSpeFeaByidApi = async (id) => {
 
 // GetAll 
 
-export const GetApi = async(searchKeyData) =>{
+export const GetApi = async(searchKeyData, pageNo, pageSize, startDate, lastDate) =>{
     axios.defaults.headers.common["Authorization"] = token;
-   const res= await axios.get(`${Domain}/subs/getAllSubs?searchKey=${searchKeyData}&startDate=&lastDate=`)
+   const res= await axios.get(`${Domain}/subs/getAllSubs?searchKey=${searchKeyData}&page=${pageNo}&size=${pageSize}&startDate=${startDate}&lastDate=${lastDate}`)
    
 //    console.log('my-response', res)
 
@@ -389,9 +398,9 @@ export const SubscriptionPutApi = async(id,datares) =>{
 }
 // Get data Api from Plan modules __________
 
-export const PlanGetApi = async(searchKeyData) =>{
+export const PlanGetApi = async(searchKeyData, pageNo, pageSize) =>{
     axios.defaults.headers.common["Authorization"] = token;
-   const res= await axios.get(`${Domain}/plan/getAllPlan?searchKey=${searchKeyData}&pageNo=1&pageSize=4`)
+   const res= await axios.get(`${Domain}/plan/getAllPlan?searchKey=${searchKeyData}&page=${pageNo}&size=${pageSize}`)
    
 //    console.log('my-response', res)
 
@@ -411,9 +420,9 @@ export const PlanGetApi = async(searchKeyData) =>{
 // ################### Request Apis ####################### 
 
 // Get all api 
-export const RequestGetApi = async(searchKeyData) =>{
+export const RequestGetApi = async(searchKeyData, pageNo, pageSize, startDate, lastDate) =>{
     axios.defaults.headers.common["Authorization"] = token;
-   const res= await axios.get(`${Domain}/request/getAll?searchKey=${searchKeyData}&startDate&lastDate`)
+   const res= await axios.get(`${Domain}/request/getAll?searchKey=${searchKeyData}&page=${pageNo}&size=${pageSize}&startDate=${startDate}&lastDate=${lastDate}`)
    // console.log(res2)
    if(res) {
     return res;
@@ -491,7 +500,7 @@ export const RequestUpdatePutApi = async(datares) =>{
 
 export const SpecialFeaGetApi = async(searchKeyData) =>{
     axios.defaults.headers.common["Authorization"] = token;
-   const res= await axios.get(`${Domain}/fea/getAllFeatures?searchKey=${searchKeyData}`)
+   const res= await axios.get(`${Domain}/fea/getAllFeatures?searchKey=${searchKeyData}&page=${pageNo}&size=${pageSize}`)
    
 //    console.log('my-response', res)
 

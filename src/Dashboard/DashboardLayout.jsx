@@ -35,6 +35,7 @@ const MainContainer = styled.div`
     width: ${(props) => (props.sidebarOpen ? '85%' : '96%')};
     transition: all width 0.6s ease; 
     background-color: #F2F3F6;
+    height: 100vh;
 
     @media screen and (max-width: 1000px) {
         width: 100% !important;
@@ -63,10 +64,10 @@ const DashboardLayout = () => {
     return (
         <SidebarContext.Provider value={{ sidebarOpen, toggleSidebar }}>
             <Container>
-                <SidebarContainer sidebarOpen={sidebarOpen}>
+                <SidebarContainer className='overflow-scroll h-100' sidebarOpen={sidebarOpen}>
                     <Sidebar />
                 </SidebarContainer>
-                <MainContainer className="container-fluid" sidebarOpen={sidebarOpen}>
+                <MainContainer className="container-fluid overflow-scroll h-100" sidebarOpen={sidebarOpen}>
                     <div className="row bg-white">
                         <Navbar />
                     </div>

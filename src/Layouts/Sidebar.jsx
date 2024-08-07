@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { Icon } from '@iconify/react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { useSidebarContext } from '../Dashboard/DashboardLayout';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { logoutApi } from '../Utils/Apis';
-import toast, { Toaster } from 'react-hot-toast';
 
 const Container = styled.div`
     background-color: var(--sidebarBackground);
@@ -191,44 +190,49 @@ const StickyHeader = styled.div`
 
 const Sidebar = () => {
 
-    const navigate = useNavigate();
+    const token = localStorage.getItem('token');
     const { sidebarOpen, toggleSidebar } = useSidebarContext();
 
-    const token = localStorage.getItem('token');
-    const [isChecked, setIsChecked] = useState(false);
-    const [activeLink, setActiveLink] = useState('dashboard');
-    const [logoutWarn, setLogoutWarn] = useState(true);
+    const location = useLocation();
+
+    const [activeLink, setActiveLink] = useState(() => {
+        const currentPath = location.pathname === '/' ? 'dashboard' : location.pathname.slice(1);
+        localStorage.setItem('activeLink', currentPath);
+        return currentPath;
+    });
+
+    useEffect(() => {
+        const currentPath = location.pathname === '/' ? 'dashboard' : location.pathname.slice(1);
+        setActiveLink(currentPath);
+        localStorage.setItem('activeLink', currentPath);
+    }, [location.pathname]);
 
     const handleActiveLink = (link) => {
         setActiveLink(link);
+        localStorage.setItem('activeLink', link);
     };
 
-    useEffect(() => {
-        navigate('/');
-    }, [logoutWarn, token])
+    useEffect(()=>{
+        
+    },[token])
 
-
-    const handleLogout = async () => {
-        if (isChecked) {
-            try {
-                var response = await logoutApi();
-                console.log(response)
-                if (response?.status === 200) {
-                    if (response?.data?.status === 'success') {
-                        localStorage.removeItem('token')
-                        setLogoutWarn(!logoutWarn);
-                    }
-                }
-                else {
-                    console.log(response?.data?.msg);
+    const handleLogout = async() =>{
+        try{
+            var response = await logoutApi();
+            console.log(response)
+            if(response?.status===200){
+                if(response?.data?.status==='success'){
+                    localStorage.removeItem('token')
+                    navigate('/')
+                    window.location.reload(); 
                 }
             }
-            catch {
-
+            else{
+                console.log(response?.data?.msg);
             }
         }
-        else{
-            toast.error('Are you Sure you want to logout ?')
+        catch{
+
         }
     }
 
@@ -366,7 +370,7 @@ const Sidebar = () => {
                         </li>
                         <li>
                             <Link className={`menus p-2 d-flex borderBottom ${sidebarOpen === '' ? 'justify-content-center' : ''} ${activeLink === 'logout' ? 'active' : ''}`} onClick={() => handleActiveLink('logout')} data-bs-toggle="offcanvas" data-bs-target="#logoutCanvas" aria-controls="logoutCanvas" >
-                                <Icon className={``} icon="bi:grid-3x3-gap" width="24" height="24" />
+                                <Icon icon="material-symbols:logout" width="1.5em" height="1.5em" />
                                 <h3 className="menu-text">Logout</h3>
                             </Link>
                         </li>
@@ -379,7 +383,7 @@ const Sidebar = () => {
                 </div>
             </div>
 
-
+            {/* Logout */}
 
             <div className="offcanvas offcanvas-end p-2" data-bs-backdrop="static" tabIndex="-1" id="logoutCanvas" aria-labelledby="staticBackdropLabel">
                 <div className="offcanvas-header ps-0 modalHighborder p-1">
@@ -391,44 +395,23 @@ const Sidebar = () => {
                     <h2 className="offcanvas-title fontWeight900" id="staticBackdropLabel">Logout Message</h2>
                 </div>
                 <div className="offcanvas-body p-0">
-                    {logoutWarn
-                        ?
+                    <div>
                         <div>
                             <p className='border-bottom p-2'>Logout</p>
                             <div className="text-center p-5">
                                 <p className='mb-2'><img src="./images/logout.svg" alt="" /></p>
-                                <h1 className='mb-3'>Are you Sure?</h1>
-                                <div className="d-flex align-self-center justify-content-center mb-3">
-                                    <input className="form-check-input formdltcheck me-2 mt-0 align-self-center" type="checkbox" value="" id="flexCheckChecked" onChange={(e) => setIsChecked(e.target.checked)} />
-                                    <label className="form-check-label align-self-center" htmlFor="flexCheckChecked">
-                                        <h3 className='greyText'>Are you Sure you want to logout?</h3>
-                                    </label>
-                                </div>
+                                <h1 className='mb-2'>Are you Sure?</h1>
+                                <h3 className='greyText'>Are you Sure you want to logout?</h3>
                                 <p className='text-center p-3'>
                                     <button className='btn deleteButtons text-white' onClick={handleLogout}>Logout</button>
                                     <button className='btn cancelButtons ms-3' data-bs-dismiss="offcanvas" aria-label="Close">Cancel</button>
                                 </p>
                             </div>
                         </div>
-                        :
-
-                        <div>
-                            <p className='border-bottom p-2'>Logout</p>
-                            <div className="mt-3">
-                                <div className='correvtSVG p-3 pt-4 rounded-circle'><img src="./images/Correct.svg" alt="" /></div>
-                                <div className="updatetext border m-4 border-2  ms-5 greydiv rounded-3 text-center greyText p-5">
-                                    <p className='greyText warningText pt-2'>You have been<br />Successfully Logged Out</p>
-                                </div>
-                                <button className='btn contbtn continueButtons text-white' data-bs-dismiss="offcanvas" aria-label="Close" onClick={()=> window.location.reload()}>Continue</button>
-                            </div>
-                        </div>
-                    }
-                    <div>
                     </div>
                 </div>
             </div>
 
-            <Toaster/>
         </Container>
     );
 };
