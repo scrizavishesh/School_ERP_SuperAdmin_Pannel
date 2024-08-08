@@ -33,7 +33,7 @@ const Main = () => {
           <Route path="/addSchoolsPage" element={<AddSchool />} />
           <Route path="/addons" element={<Addon />} />
           <Route path="/addAddons" element={<AddAddon />} />
-          <Route path="/addFeatures" element={<AddFeature />} />
+          <Route path="/addfeatures" element={<AddFeature />} />
           <Route path="/allPackagesPage" element={<Packages />} />
           <Route path="/subscriptionPage" element={<Subscription/>} />
           <Route path="/requestPage" element={<Request />} />

@@ -373,7 +373,6 @@ const AddSchool = () => {
 
   const AddNewSchool = async () => {
     if (validateFields()) {
-      console.log('valid')
       try {
         const formData = new FormData();
         formData.append("schoolName", schoolName);
@@ -398,9 +397,10 @@ const AddSchool = () => {
         if (response?.status === 200) {
           console.log(response)
           if (response?.data?.status === 'success') {
-            setgetSchoolData(response?.data?.school);
             toast.success(response?.data?.message)
+           setTimeout(()=> {
             navigate('/allSchoolsPage')
+           }, 1000)
           }
         }
         else {

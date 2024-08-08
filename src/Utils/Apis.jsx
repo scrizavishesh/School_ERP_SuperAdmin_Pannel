@@ -3,7 +3,7 @@ const token = `Bearer ${localStorage.getItem('token')}`;
 const forgetTooken = `Bearer ${localStorage.getItem('forgteToken')}`;
 // const token = localStorage.getItem('token');
 
-const LocalServerIP= 'http://192.168.1.2:5000';
+// const LocalServerIP= 'http://192.168.1.2:5000';
 const Domain= 'https://www.auth.edu2all.in';
 // const Domain= 'http://auth.edu2all.in:5000';
 
