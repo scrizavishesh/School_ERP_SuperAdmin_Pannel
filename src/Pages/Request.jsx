@@ -395,10 +395,10 @@ const ManageFaq = () => {
       if (response?.status === 200) {
         setHidedelete(true)
         setShowdelete(false)
-        toast.success(response?.data?.msg);
+        toast.success(response?.data?.message);
         showName()
       } else {
-        toast.error(response?.data?.msg);
+        toast.error(response?.data?.message);
       }
 
     } catch (error) {
@@ -421,9 +421,9 @@ const ManageFaq = () => {
       setReqid(response.data.request.reqId)
       setReqDate(response.data.request.reqDate.slice(0, 10))
       if (response?.status === 'success') {
-        toast.success(response?.data?.msg);
+        toast.success(response?.data?.message);
       } else {
-        // toast.error(response?.data?.msg);
+        // toast.error(response?.data?.message);
       }
     } catch (error) {
       console.log(error)
@@ -441,9 +441,9 @@ const ManageFaq = () => {
 
       console.log('my-data-put-Api', response)
       if (response?.status === 'success') {
-        toast.success(response?.data?.msg);
+        toast.success(response?.data?.message);
       } else {
-        toast.error(response?.data?.msg);
+        toast.error(response?.data?.message);
       }
       if (response) {
         setDatamsg('')
@@ -502,12 +502,12 @@ const ManageFaq = () => {
 
         console.log('my-data-put-Api', response)
         if (response?.data?.status === 'success') {
-          toast.success(response?.data?.msg);
+          toast.success(response?.data?.message);
           setShow1(false)
           setHidesuccess(true)
           showName()
         } else {
-          toast.error(response?.data?.msg);
+          toast.error(response?.data?.message);
         }
         if (response) {
           setShow1(false)

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { Icon } from '@iconify/react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useSidebarContext } from '../Dashboard/DashboardLayout';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { logoutApi } from '../Utils/Apis';
@@ -190,6 +190,7 @@ const StickyHeader = styled.div`
 
 const Sidebar = () => {
 
+    const navigate = useNavigate();
     const token = localStorage.getItem('token');
     const { sidebarOpen, toggleSidebar } = useSidebarContext();
 
@@ -219,6 +220,7 @@ const Sidebar = () => {
 
     }, [token])
 
+    const [LogoutSuccess, setLogoutSuccess] = useState(true);
     const handleLogout = async () => {
         try {
             var response = await logoutApi();
@@ -226,17 +228,22 @@ const Sidebar = () => {
             if (response?.status === 200) {
                 if (response?.data?.status === 'success') {
                     localStorage.removeItem('token')
-                    navigate('/')
-                    window.location.reload();
+                    setLogoutSuccess(false);
                 }
             }
             else {
-                console.log(response?.data?.msg);
+                console.log(response?.data?.message);
             }
         }
         catch {
 
         }
+    }
+
+    const handleContinue = () => {
+        window.location.reload();
+        window.location.reload();
+        navigate('/')
     }
 
 
@@ -245,9 +252,11 @@ const Sidebar = () => {
 
         if (val === 'addons') {
             setAddOnDropOpen(!AddonDropOpen);
+            navigate('/addons')
             setSettingsDropOpen(false)
         }
         else if (val === 'systemSettingPage') {
+            navigate('/systemSettingPage')
             setAddOnDropOpen(false);
             setSettingsDropOpen(!SettingsDropOpen)
         }
@@ -303,22 +312,22 @@ const Sidebar = () => {
                                 </div>
                             </Link>
                             <div id="collapseAddon" className={`collapse collapse-menu p-0 ${AddonDropOpen ? 'show' : 'hide'}`}>
-                                <ul className='list-unstyled p-0'>
+                                <ul className='list-unstyled p-0 bg-white'>
                                     <li>
                                         <Link to="/addons" className={`menus p-2 d-flex borderBottom ${sidebarOpen === '' ? 'justify-content-center' : ''} ${activeLink === 'addons' ? 'active' : ''}`} onClick={() => handleActiveLink('addons')} >
-                                            <Icon className={``} icon="bi:grid-3x3-gap" width="24" height="24" />
+                                            <Icon icon="mage:dashboard-2" width="1.5em" height="1.5em" />
                                             <h3 className="menu-text">Addons Details</h3>
                                         </Link>
                                     </li>
                                     <li>
                                         <Link to="/addAddons" className={`menus p-2 d-flex borderBottom ${sidebarOpen === '' ? 'justify-content-center' : ''} ${activeLink === 'addAddons' ? 'active' : ''}`} onClick={() => handleActiveLink('addAddons')} >
-                                            <Icon className={``} icon="bi:grid-3x3-gap" width="24" height="24" />
+                                            <Icon icon="fluent:note-add-48-regular" width="1.5em" height="1.5em" />
                                             <h3 className="menu-text">Add Addons</h3>
                                         </Link>
                                     </li>
                                     <li>
                                         <Link to="/addfeatures" className={`menus p-2 d-flex borderBottom ${sidebarOpen === '' ? 'justify-content-center' : ''} ${activeLink === 'addfeatures' ? 'active' : ''}`} onClick={() => handleActiveLink('addfeatures')} >
-                                            <Icon className={``} icon="bi:grid-3x3-gap" width="24" height="24" />
+                                            <Icon icon="mdi:key-add" width="1.5em" height="1.5em" />
                                             <h3 className="menu-text">Add Permissions</h3>
                                         </Link>
                                     </li>
@@ -417,6 +426,7 @@ const Sidebar = () => {
                 </div>
             </div>
 
+
             {/* Logout */}
 
             <div className="offcanvas offcanvas-end p-2" data-bs-backdrop="static" tabIndex="-1" id="logoutCanvas" aria-labelledby="staticBackdropLabel">
@@ -429,20 +439,37 @@ const Sidebar = () => {
                     <h2 className="offcanvas-title fontWeight900" id="staticBackdropLabel">Logout Message</h2>
                 </div>
                 <div className="offcanvas-body p-0">
-                    <div>
-                        <div>
-                            <p className='border-bottom p-2'>Logout</p>
-                            <div className="text-center p-5">
-                                <p className='mb-2'><img src="./images/logout.svg" alt="" /></p>
-                                <h1 className='mb-2'>Are you Sure?</h1>
-                                <h3 className='greyText'>Are you Sure you want to logout?</h3>
-                                <p className='text-center p-3'>
-                                    <button className='btn deleteButtons text-white' onClick={handleLogout}>Logout</button>
-                                    <button className='btn cancelButtons ms-3' data-bs-dismiss="offcanvas" aria-label="Close">Cancel</button>
-                                </p>
+                    {LogoutSuccess
+                        ?
+                        <>
+                            <div>
+                                <p className='border-bottom p-2'>Logout</p>
+                                <div className="text-center p-5">
+                                    <p className='mb-2'><img src="./images/logout.svg" alt="" /></p>
+                                    <h1 className='mb-2'>Are you Sure?</h1>
+                                    <h3 className='greyText'>Are you Sure you want to logout?</h3>
+                                    <p className='text-center p-3'>
+                                        <button className='btn deleteButtons text-white' onClick={handleLogout}>Logout</button>
+                                        <button className='btn cancelButtons ms-3' data-bs-dismiss="offcanvas" aria-label="Close">Cancel</button>
+                                    </p>
+                                </div>
                             </div>
-                        </div>
-                    </div>
+                        </>
+                        :
+                        <>
+                            <div>
+                                <p className='modalLightBorder p-2 mb-0'>Logout</p>
+                                <div className="mt-3">
+                                    <div className='correvtSVG p-3 pt-4 rounded-circle'><img src="./images/Correct.svg" alt="" /></div>
+                                    <div className="updatetext border m-4 border-2  ms-5 greydiv rounded-3 text-center greyText p-5">
+                                        <p className='warningHeading'>Successful Updated</p>
+                                        <p className='greyText warningText pt-2'>Your Changes has been<br />Successfully Saved</p>
+                                    </div>
+                                    <button className='btn contbtn continueButtons text-white' type='button' data-bs-dismiss="offcanvas" aria-label="Close" onClick={handleContinue}>Continue</button>
+                                </div>
+                            </div>
+                        </>
+                    }
                 </div>
             </div>
 

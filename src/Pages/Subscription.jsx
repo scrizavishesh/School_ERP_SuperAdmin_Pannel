@@ -363,13 +363,13 @@ const Subscription = () => {
       console.log('subscription-get-all-api', response);
       if (response?.status === 200) {
         setloaderState(false);
-        toast.success(response?.data?.msg);
+        toast.success(response?.data?.message);
         setData(response.data.subscriptions)
         setCurrentPage(response?.data?.currentPage)
         setTotalPages(response?.data?.totalPages)
 
       } else {
-        toast.error(response?.data?.msg);
+        toast.error(response?.data?.message);
       }
     } catch (error) {
       console.log(error)
@@ -386,10 +386,10 @@ const Subscription = () => {
       if (response?.status === 200) {
         setHidedelete(true)
         setShowdelete(false)
-        toast.success(response?.data?.msg);
+        toast.success(response?.data?.message);
         showName()
       } else {
-        toast.error(response?.data?.msg);
+        toast.error(response?.data?.message);
       }
 
     } catch (error) {
@@ -416,9 +416,9 @@ const Subscription = () => {
 
       if (response?.status === 'success') {
 
-        toast.success(response?.data?.msg);
+        toast.success(response?.data?.message);
       } else {
-        toast.error(response?.data?.msg);
+        toast.error(response?.data?.message);
       }
     } catch (error) {
       console.log('catch')
@@ -473,12 +473,12 @@ const Subscription = () => {
         const response = await SubscriptionPutApi(id, formData);
         console.log('my-data-put-Api-subscription-12', response)
         if (response?.data?.status === "success") {
-          toast.success(response?.data?.msg);
+          toast.success(response?.data?.message);
           setUpdateState(false)
           setSuccessUpdateState(true)
           showName()
         } else {
-          toast.error(response?.data?.msg);
+          toast.error(response?.data?.message);
         }
       } catch (error) {
         console.log(error)

@@ -197,11 +197,11 @@ const Addon = () => {
           setAllSpeFeature(response?.data?.addons);
           setCurrentPage(response?.data?.currentPage)
           setTotalPages(response?.data?.totalPages)
-          toast.success(response?.data?.msg)
+          toast.success(response?.data?.message)
         }
       }
       else {
-        console.log(response?.data?.msg);
+        console.log(response?.data?.message);
       }
     }
     catch {
@@ -221,7 +221,7 @@ const Addon = () => {
         }
       }
       else {
-        console.log(response?.data?.msg);
+        console.log(response?.data?.message);
       }
     }
     catch {
@@ -241,17 +241,17 @@ const Addon = () => {
         if (response?.status === 200) {
           console.log('200')
           if (response?.data?.status === 'success') {
-            console.log(response?.data?.msg)
+            console.log(response?.data?.message)
             setEditBundleWarn(!EditBundleWarn)
             console.log('success')
             // setPerDataBySpeFeaId(response?.data?.permissions)
           }
           else {
-            console.log(response?.data?.msg)
+            console.log(response?.data?.message)
           }
         }
         else {
-          console.log(response?.data?.msg);
+          console.log(response?.data?.message);
         }
       }
       catch {
@@ -265,7 +265,7 @@ const Addon = () => {
       var response = await deletePerByidApi(permId);
       if (response?.status === 200) {
         if (response.data.status === 'success') {
-          toast.success(response?.data?.msg)
+          toast.success(response?.data?.message)
           getPermBySpeFeaId(featureIdd);
         }
       }
@@ -285,7 +285,7 @@ const Addon = () => {
         if (response?.status === 200) {
           if (response.data.status === 'success') {
             setDeleteWarning(!DeleteWarning)
-            toast.success(response?.data?.msg)
+            toast.success(response?.data?.message)
           }
         }
         else {

@@ -195,7 +195,7 @@ const Packages = () => {
   const [totalPages, setTotalPages] = useState(1);
   const [totalItems, setTotalItems] = useState(0);
   const [pageNo, setPageNo] = useState(1);
-  const [pageSize, setPageSize] = useState(2);
+  const [pageSize, setPageSize] = useState(3);
 
 
 
@@ -244,7 +244,7 @@ const Packages = () => {
         }
       }
       else {
-        console.log(response?.data?.msg);
+        console.log(response?.data?.message);
       }
     }
     catch {
@@ -268,7 +268,7 @@ const Packages = () => {
         }
       }
       else {
-        console.log(response?.data?.msg);
+        console.log(response?.data?.message);
       }
     }
     catch {
@@ -292,7 +292,7 @@ const Packages = () => {
         if (response?.status === 200) {
           if (response.data.status === 'success') {
             setEditWarning(!EditWarning);
-            toast.success(response?.data?.msg)
+            toast.success(response?.data?.message)
           }
         } else {
           toast.error(response?.error);
@@ -310,7 +310,7 @@ const Packages = () => {
         if (response?.status === 200) {
           if (response.data.status === 'success') {
             setDeleteWarning(!DeleteWarning)
-            toast.success(response?.data?.msg)
+            toast.success(response?.data?.message)
           }
         }
         else {
@@ -537,12 +537,12 @@ const Packages = () => {
         var response = await addNewPackageApi(data);
         if (response?.status === 200) {
           if (response?.data?.status === 'success') {
-            toast.success(response?.data?.msg)
+            toast.success(response?.data?.message)
             setAddWarning(!AddWarning)
           }
         }
         else {
-          console.log(response?.data?.msg);
+          console.log(response?.data?.message);
         }
       }
       catch {

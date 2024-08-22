@@ -48,13 +48,13 @@ const ViewSchoolDetails = () => {
       if (response?.status === 200) {
         if (response?.data?.status === 'success') {
           setgetSchoolIdData(response?.data?.school);
-          toast.success(response?.data?.msg);
+          toast.success(response?.data?.message);
           setloaderState(false)
         }
       }
       else {
         setloaderState(false)
-        toast.error(response?.data?.msg);
+        toast.error(response?.data?.message);
       }
     }
     catch {

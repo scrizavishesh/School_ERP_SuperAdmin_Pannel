@@ -162,7 +162,7 @@ export const updateSpecialFeatureInSchoolApi = async (id, data) => {
 
 export const getAllPlanApi = async(searchKeyData, pageNo, size) => {
     axios.defaults.headers.common["Authorization"] = token;
-    var res = await axios.get(`${Domain}/plan/getAllPlan?searchKey=${searchKeyData}&pageNo=${pageNo}&size=${size}`);
+    var res = await axios.get(`${Domain}/plan/getAllPlan?searchKey=${searchKeyData}&page=${pageNo}&size=${size}`);
 
     if (res) {
         return res;

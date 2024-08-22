@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import { Link, useNavigate } from 'react-router-dom';
 import { addNewFeaPerApi, getAllSpeFeatApi } from '../Utils/Apis';
 import { toast } from 'react-hot-toast';
+import DataLoader from '../Layouts/Loader';
 
 const Container = styled.div`
   height: 92vh;
@@ -47,8 +48,12 @@ const Container = styled.div`
 `;
 
 const AddPermission = () => {
+
   const navigate = useNavigate();
   const token = localStorage.getItem('token');
+  //loader State
+  const [loaderState, setloaderState] = useState(false);
+
   const [allSpeFeature, setAllSpeFeature] = useState([]);
 
   const [Plan, setPlan] = useState('');
@@ -65,18 +70,28 @@ const AddPermission = () => {
 
   const getAllSpecialFeature = async () => {
     try {
-      const searchKey = '';
-      var response = await getAllSpeFeatApi(searchKey);
-      console.log(response);
+      setloaderState(true);
+      const searchKeyData= '';
+      const pageNo = '';
+      const pageSize= '';
+
+      var response = await getAllSpeFeatApi(searchKeyData, pageNo, pageSize);
+      console.log(response)
       if (response?.status === 200) {
         if (response?.data?.status === 'success') {
+          setloaderState(false);
           setAllSpeFeature(response?.data?.addons);
+          toast.success(response?.data?.message)
         }
-      } else {
-        console.log(response?.data?.msg);
       }
-    } catch {}
-  };
+      else {
+        console.log(response?.data?.message);
+      }
+    }
+    catch {
+
+    }
+  }
 
   const handlePlanChange = (e) => {
     const newValue = e.target.value;
@@ -116,20 +131,16 @@ const AddPermission = () => {
 
   const AddNewFeaPerm = async () => {
     if (validateFields()) {
-      console.log('valid');
       try {
         const data = formInputs.map((field) => ({ perName: field.name }));
-        console.log(data);
         var response = await addNewFeaPerApi(data, Plan);
-        console.log('api hit 1');
         if (response?.status === 200) {
-          console.log(response);
           if (response?.data?.status === 'success') {
-            toast.success(response?.data?.msg);
+            toast.success(response?.data?.message);
             navigate('/addons');
           }
         } else {
-          console.log(response?.data?.msg);
+          console.log(response?.data?.message);
         }
       } catch {
         console.log('invalid');
@@ -159,8 +170,17 @@ const AddPermission = () => {
     }
   };
 
+  const handleCancel = () => {
+    navigate('/addons');
+  }
+
   return (
     <Container>
+    {
+      loaderState && (
+        <DataLoader />
+      )
+    }
       <div className="container-fluid ps-3 pe-3 pt-2 pb-2">
         <div className="row pt-3">
           <div className="col-md-9 col-sm-12">
@@ -202,13 +222,11 @@ const AddPermission = () => {
               </div>
               <div className="col-md-6 col-sm-12">
                 {formInputs.map((element, index) => (
-                  <>
-                    <div className="row d-flex mb-3" key={index}>
-                      <label htmlFor="BundleName" className="form-label greyText">Permission Name</label>
-                      <input type="text" name="name" className={`form-control ${PermissionNameError ? 'border-1 border-danger' : ''}`} id="inputSchlEmail" placeholder="Enter Permission Name" value={element.name} onChange={(e) => handleChange(index, e)} />
-                      <span className="text-danger">{PermissionNameError}</span>
-                    </div>
-                  </>
+                  <div className="row d-flex mb-3" key={index}>
+                    <label htmlFor="BundleName" className="form-label greyText">Permission Name</label>
+                    <input type="text" name="name" className={`form-control ${PermissionNameError ? 'border-1 border-danger' : ''}`} id="inputSchlEmail" placeholder="Enter Permission Name" value={element.name} onChange={(e) => handleChange(index, e)} />
+                    <span className="text-danger">{PermissionNameError}</span>
+                  </div>
                 ))}
                 <div className="d-flex mt-2">
                   <h5 className='flex-grow-1 text-decoration-none textBlue' onClick={addFormFields}>Add More</h5>
@@ -218,7 +236,7 @@ const AddPermission = () => {
             </div>
             <p className='text-center p-3'>
               <button className='btn addCategoryButtons text-white' type='button' onClick={AddNewFeaPerm}>Add Permission</button>
-              <button className='btn cancelButtons ms-3'>Cancel</button>
+              <button className='btn cancelButtons ms-3' onClick={handleCancel}  type='button'>Cancel</button>
             </p>
           </form>
         </div>
@@ -318,7 +336,7 @@ export default AddPermission;
 //         }
 //       }
 //       else{
-//         console.log(response?.data?.msg);
+//         console.log(response?.data?.message);
 //       }
 //     }
 //     catch{
@@ -383,12 +401,12 @@ export default AddPermission;
 //         if (response?.status === 200) {
 //           console.log(response)
 //           if (response?.data?.status === 'success') {
-//             toast.success(response?.data?.msg)
+//             toast.success(response?.data?.message)
 //             navigate('/addons')
 //           }
 //         }
 //         else {
-//           console.log(response?.data?.msg);
+//           console.log(response?.data?.message);
 //         }
 //       }
 //       catch {

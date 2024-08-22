@@ -101,14 +101,14 @@ const ForgotPassword = () => {
                     setTimeout(()=>{
                         navigate('/verifyOtp');
                     }, 3000)
-                    toast.success(response?.data?.msg)
+                    toast.success(response?.data?.message)
                   }
                   else{
-                    toast.error(response?.data?.msg)
+                    toast.error(response?.data?.message)
                   }
                 }
                 else{
-                  toast.error(response?.data?.msg)
+                  toast.error(response?.data?.message)
                 }
             }
             catch{

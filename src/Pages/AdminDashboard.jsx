@@ -80,7 +80,7 @@ const AdminDashboard = () => {
       }
       else{
         setloaderState(false);
-        console.log(response?.data?.msg);
+        console.log(response?.data?.message);
       }
     }
     catch{
@@ -91,7 +91,10 @@ const AdminDashboard = () => {
   const getAllSchoolData = async() => {
     try{
       setloaderState(true);
-      var response = await getSchoolDataApi(searchKeyData);
+      const search = '';
+      const page = '';
+      const size = '';
+      var response = await getSchoolDataApi(search, page, size);
       if(response?.status===200){
         if(response?.data?.status ==='success'){
           setSchoolData(response?.data?.schools);
@@ -111,7 +114,10 @@ const AdminDashboard = () => {
   const getAllPlans = async() => {
     try{
       setloaderState(true);
-      var response = await getAllPlanApi(searchKeyData);
+      const search = '';
+      const page = '';
+      const size = '';
+      var response = await getAllPlanApi(search, page, size);
       if(response?.status===200){
         if(response?.data?.status==='success'){
           setAllPlan(response?.data?.plans);
@@ -119,7 +125,7 @@ const AdminDashboard = () => {
         }
       }
       else{
-        console.log(response?.data?.msg);
+        console.log(response?.data?.message);
       }
     }
     catch{
@@ -130,7 +136,12 @@ const AdminDashboard = () => {
   const getAllRequest = async() => {
     try{
       setloaderState(true);
-      var response = await RequestGetApi();
+      const search = '';
+      const page = '';
+      const size = '';
+      const startDate = '';
+      const endDate = '';
+      var response = await RequestGetApi(search, page, size, startDate, endDate);
       if(response?.status===200){
         if(response?.data?.status==='success'){
           setAllRequest(response?.data?.requests);
@@ -138,7 +149,7 @@ const AdminDashboard = () => {
         }
       }
       else{
-        console.log(response?.data?.msg);
+        console.log(response?.data?.message);
       }
     }
     catch{

@@ -132,12 +132,12 @@ const AddAddon = () => {
           if (response?.status === 200) {
             console.log(response)
             if (response?.data?.status === 'success') {
-              toast.success(response?.data?.msg)
+              toast.success(response?.data?.message)
               navigate('/addons')
             }
           }
           else {
-            console.log(response?.data?.msg);
+            console.log(response?.data?.message);
           }
         }
         catch {
@@ -147,6 +147,10 @@ const AddAddon = () => {
     }
   }
 
+
+  const handleCancel = () => {
+    navigate('/addons');
+  }
 
 
   return (
@@ -198,7 +202,7 @@ const AddAddon = () => {
               </div>
               <p className='text-center p-3'>
                 <button className='btn addButtons text-white' onClick={AddNewAddon} type='button'>Add Addon</button>
-                <button className='btn cancelButtons ms-3'>Cancel</button>
+                <button className='btn cancelButtons ms-3' onClick={handleCancel}  type='button'>Cancel</button>
               </p>
             </form>
           </div>

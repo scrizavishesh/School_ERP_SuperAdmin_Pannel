@@ -179,7 +179,7 @@ const Login = () => {
                         window.location.reload();
                     }
                     else {
-                        toast.error(response?.data?.msg)
+                        toast.error(response?.data?.message)
                         console.log('login fail')
                     }
                 }

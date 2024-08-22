@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import { Link, useNavigate } from 'react-router-dom';
 import { addNewSchoolApi, getAllPlanApi } from '../Utils/Apis';
 import toast, { Toaster } from 'react-hot-toast';
+import DataLoader from '../Layouts/Loader';
 
 const Container = styled.div`
   height: 92vh;
@@ -44,7 +45,6 @@ const Container = styled.div`
 
 `;
 
-
 const CollapsedContainer = styled.div`
 
   .collapse{
@@ -58,7 +58,10 @@ const AddSchool = () => {
 
   const token = localStorage.getItem('token');
 
-  const navigate= useNavigate();
+  //loader State
+  const [loaderState, setloaderState] = useState(false);
+
+  const navigate = useNavigate();
 
   const [schoolFormOpen, setSchoolFormOpen] = useState(true);
   const [adminInfoOpen, setAdminInfoOpen] = useState(false);
@@ -112,22 +115,22 @@ const AddSchool = () => {
   }, [token])
 
 
-  const getAllPlans = async() => {
-    try{
+  const getAllPlans = async () => {
+    try {
       const searchKey = ''
       const page = ''
       const size = ''
       var response = await getAllPlanApi(searchKey, page, size);
-      if(response?.status===200){
-        if(response?.data?.status==='success'){
+      if (response?.status === 200) {
+        if (response?.data?.status === 'success') {
           setAllPlan(response?.data?.plans);
         }
       }
-      else{
-        console.log(response?.data?.msg);
+      else {
+        console.log(response?.data?.message);
       }
     }
-    catch{
+    catch {
 
     }
   }
@@ -235,7 +238,7 @@ const AddSchool = () => {
   // *********************************************************************************
 
   const nameRegex = /^[A-Za-z\s]+$/;
-  const emailRegex =  /^[A-Za-z0-9._]{3,}@[A-Za-z]{3,8}[.]{1}[A-Za-z.]{2,6}$/;
+  const emailRegex = /^[A-Za-z0-9._]{3,}@[A-Za-z]{3,8}[.]{1}[A-Za-z.]{2,6}$/;
   const PhoneRegex = /^[6-9]\d{9}$/;
   const textAlphaRegex = /^[A-Za-z0-9\s]+$/;
 
@@ -267,12 +270,12 @@ const AddSchool = () => {
   };
 
   const validateTextFields = (value) => {
-      if (!value.trim()) {
-        return '*This Field is required';
-      } else if (!textAlphaRegex.test(value)) {
-        return 'Invalid characters in name !!';
-      }
-      return '';
+    if (!value.trim()) {
+      return '*This Field is required';
+    } else if (!textAlphaRegex.test(value)) {
+      return 'Invalid characters in name !!';
+    }
+    return '';
   };
 
   const validateFields = () => {
@@ -373,6 +376,7 @@ const AddSchool = () => {
 
   const AddNewSchool = async () => {
     if (validateFields()) {
+      setloaderState(true)
       try {
         const formData = new FormData();
         formData.append("schoolName", schoolName);
@@ -391,27 +395,29 @@ const AddSchool = () => {
         formData.append("adminImage", adminPhoto);
         formData.append("adminPassword", 'admin12');
         formData.append("schoolPassword", 'school12');
-        
+
         var response = await addNewSchoolApi(formData);
-        console.log(response)
         if (response?.status === 200) {
           console.log(response)
           if (response?.data?.status === 'success') {
             toast.success(response?.data?.message)
-           setTimeout(()=> {
-            navigate('/allSchoolsPage')
-           }, 1000)
+            setloaderState(false)
+            setTimeout(() => {
+              navigate('/allSchoolsPage')
+            }, 1000)
           }
+          else {
+            console.log('fail')
+          }
+        } else {
+          toast.error(response?.error);
         }
-        else {
-          console.log(response?.data?.message);
-        }
-      }
-      catch {
+      } catch (error) {
+        console.error('Error during update:', error);
       }
     }
-    else{
-      toast.error('Please validate all fields first')
+    else {
+      toast.error('Please Validate All Fields Correctly')
     }
   }
 
@@ -419,6 +425,11 @@ const AddSchool = () => {
   return (
     <>
       <Container>
+        {
+          loaderState && (
+            <DataLoader />
+          )
+        }
         <div className="container-fluid ps-3 pe-3 pt-2 pb-2">
           <div className="row pt-3">
             <nav className='breadcrumnav' aria-label="breadcrumb">
@@ -542,7 +553,7 @@ const AddSchool = () => {
                           <label htmlFor="formFile" className="form-label"><h3>School Logo*</h3></label>
                         </div>
                         <div className="col-md-12">
-                          <input type="file" accept='.jpg, .jpeg, .png' className={`form-control formcontrolFile ${schoolLogoError ? 'border-1 border-danger' : ''} `} id="formFile" onChange={(e)=>handleSchoolLogoChange(e)} />
+                          <input type="file" accept='.jpg, .jpeg, .png' className={`form-control formcontrolFile ${schoolLogoError ? 'border-1 border-danger' : ''} `} id="formFile" onChange={(e) => handleSchoolLogoChange(e)} />
                         </div>
                         <div className="col-md-12">
                           <span className="text-danger">{schoolLogoError}</span>
@@ -586,9 +597,9 @@ const AddSchool = () => {
                       </div>
                       <div className="col-md-12">
                         <select className={`form-select font14 ${adminGenderError ? 'border-1 border-danger' : ''} `} aria-label="Default select example" onChange={(e) => handleAdminGender(e)}>
-                            <option >--- Choose ---</option>
-                            <option value='Male'>Male</option>
-                            <option value='Female'>Female</option>
+                          <option >--- Choose ---</option>
+                          <option value='Male'>Male</option>
+                          <option value='Female'>Female</option>
                         </select>
                       </div>
                       <div className="col-md-12">
@@ -649,7 +660,7 @@ const AddSchool = () => {
               </p>
             </div>
           </div>
-          <Toaster/>
+          <Toaster />
         </div>
       </Container>
     </>
