@@ -407,12 +407,16 @@ const AddSchool = () => {
             }, 1000)
           }
           else {
-            console.log('fail')
+            setloaderState(false)
+            toast.error(response?.data.message);
           }
-        } else {
-          toast.error(response?.error);
+        }
+        else {
+          setloaderState(false)
+          toast.error(response?.data.message);
         }
       } catch (error) {
+        setloaderState(false)
         console.error('Error during update:', error);
       }
     }

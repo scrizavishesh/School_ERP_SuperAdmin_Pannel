@@ -3,7 +3,7 @@ const token = `Bearer ${localStorage.getItem('token')}`;
 const forgetTooken = `Bearer ${localStorage.getItem('forgteToken')}`;
 // const token = localStorage.getItem('token');
 
-// const LocalServerIP= 'http://192.168.1.2:5000';
+// const Domain= 'http://192.168.20.109:5000';
 const Domain= 'https://www.auth.edu2all.in';
 // const Domain= 'http://auth.edu2all.in:5000';
 
@@ -146,7 +146,7 @@ export const deleteSchoolApi = async (id) => {
 
 export const updateSpecialFeatureInSchoolApi = async (id, data) => {
     axios.defaults.headers.common["Authorization"] = token;
-    var res = await axios.post(`192.168.20.109:5000/plan/addFeaByPlanId/${id}`, data );
+    var res = await axios.post(`${Domain}/plan/addFeaByPlanId/${id}`, data );
     if (res) {
         return res;
     }else{

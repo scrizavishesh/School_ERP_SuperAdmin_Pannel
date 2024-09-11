@@ -244,6 +244,9 @@ const Addon = () => {
             console.log(response?.data?.message)
             setEditBundleWarn(!EditBundleWarn)
             console.log('success')
+            setTimeout(() => (
+              window.location.reload()
+            ), 1200);
             // setPerDataBySpeFeaId(response?.data?.permissions)
           }
           else {
@@ -286,6 +289,9 @@ const Addon = () => {
           if (response.data.status === 'success') {
             setDeleteWarning(!DeleteWarning)
             toast.success(response?.data?.message)
+            setTimeout(() => (
+              window.location.reload()
+            ), 1200);
           }
         }
         else {

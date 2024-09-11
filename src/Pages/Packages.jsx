@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import styled from 'styled-components'
 import { Link } from 'react-router-dom';
-import { addNewPackageApi, deletePlanApi, getAllPlanApi, getPlanByIdApi, updatePlanApi } from '../Utils/Apis';
+import { addNewPackageApi, deletePlanApi, getAllActiveInActiveSpeFeatApi, getAllPlanApi, getPlanByIdApi, updatePlanApi, updateSpecialFeatureInSchoolApi } from '../Utils/Apis';
 import toast, { Toaster } from 'react-hot-toast';
 import DataLoader from '../Layouts/Loader';
 import ReactPaginate from 'react-paginate';
@@ -136,9 +136,17 @@ const Packages = () => {
   const [DeleteWarning, setDeleteWarning] = useState(true);
   const [EditWarning, setEditWarning] = useState(true);
   const [AddWarning, setAddWarning] = useState(true);
+  const [SpecialFeatureWarning, setSpecialFeatureWarning] = useState(true);
+  const [UpdateSpecialFeatureWarning, setUpdateSpecialFeatureWarning] = useState(true);
+
+  const [isCheckedFeature, setIsCheckedFeature] = useState([]);
+  const [addFeature, setAddFeature] = useState([]);
+  const [removeFeature, setRemoveFeature] = useState([]);
+  const [currentSchoolPlanId, setCurrentSchoolPlanId] = useState();
+
   const [AllPlan, setAllPlan] = useState([]);
   const [bundlePackData, setBundlePackData] = useState([]);
-
+  const [allActiveInActiveSpeFeature, SetAllActiveInActiveSpeFeature] = useState([]);
 
   const [PlanIdPlanNameData, setPlanIdPlanNameData] = useState('');
   const [PlanIdPriceData, setPlanIdPriceData] = useState('');
@@ -147,13 +155,11 @@ const Packages = () => {
   const [PlanIdStudentLimitData, setPlanIdStudentLimitData] = useState('');
   const [PlanIdStatusData, setPlanIdStatusData] = useState('');
 
-
   const [PlanIdPriceDataError, setPlanIdPriceDataError] = useState('');
   const [PlanIdValueDataError, setPlanIdValueDataError] = useState('');
   const [PlanIdIntervalDataError, setPlanIdIntervalDataError] = useState('');
   const [PlanIdStudentLimitDataError, setPlanIdStudentLimitDataError] = useState('');
   const [PlanIdStatusDataError, setPlanIdStatusDataError] = useState('');
-
 
   const [isChecked, setIsChecked] = useState(false);
   const [deletePlanId, setDeletePlanId] = useState(false);
@@ -182,11 +188,6 @@ const Packages = () => {
   const PriceRegex = /^[0-9\s]{1,9}[.]{1}[0-9\s]{1,9}$/;
   const NumberRegex = /^[0-9\s]+$/;
 
-
-  const [refreshDelete, setRefreshDelete] = useState(false);
-  const [refreshUpdate, setRefreshUpdate] = useState(false);
-  const [refreshAdd, setRefreshAdd] = useState(false);
-
   const [searchKeyData, setSearchKeyData] = useState('');
 
   // Pagination
@@ -195,36 +196,51 @@ const Packages = () => {
   const [totalPages, setTotalPages] = useState(1);
   const [totalItems, setTotalItems] = useState(0);
   const [pageNo, setPageNo] = useState(1);
-  const [pageSize, setPageSize] = useState(3);
+  const [pageSize, setPageSize] = useState(10);
 
 
 
   useEffect(() => {
     getAllPlans();
-  }, [refreshDelete, refreshUpdate, refreshAdd, pageNo])
+  }, [pageNo])
 
   const handlePageClick = (event) => {
     setPageNo(event.selected + 1); // as event start from 0 index
   };
 
-  const PageRefreshOnDelete = () => {
-    setDeleteWarning(!DeleteWarning);
-    setRefreshDelete(!refreshDelete);
-  }
+  // const handleCheckboxChange = (featureId) => {
+  //   setIsCheckedFeature((prev) => {
+  //     const isChecked = prev.includes(featureId);
 
-  const PageRefreshOnUpdate = () => {
-    setEditWarning(!EditWarning)
-    setRefreshUpdate(!refreshUpdate);
-  }
+  //     if (isChecked) {
+  //       setRemoveFeature((prev) => [...prev, featureId]);
+  //       setAddFeature((prev) => prev.filter((id) => id !== featureId));
+  //       return prev.filter((id) => id !== featureId);
+  //     } else {
+  //       setAddFeature((prev) => [...prev, featureId]);
+  //       setRemoveFeature((prev) => prev.filter((id) => id !== featureId));
+  //       return [...prev, featureId];
+  //     }
+  //   });
+  // };
 
-  const PageRefreshAdd = () => {
-    setAddWarning(!AddWarning);
-    setRefreshAdd(!refreshAdd);
-  }
 
-  const DeleteBtnClicked = (id) => {
-    setDeletePlanId(id)
-  }
+  const handleCheckboxChange = (featureId) => {
+    setIsCheckedFeature((prev) => {
+      const isChecked = prev.includes(featureId);
+
+      if (isChecked) {
+        setAddFeature((prev) => prev.filter((id) => id !== featureId));
+        setRemoveFeature((prev) => [...new Set([...prev, featureId])]); 
+        return prev.filter((id) => id !== featureId);
+      } else {
+        setAddFeature((prev) => [...new Set([...prev, featureId])]);
+        setRemoveFeature((prev) => prev.filter((id) => id !== featureId));
+        return [...prev, featureId];
+      }
+    });
+  };
+
 
 
   const getAllPlans = async () => {
@@ -240,6 +256,10 @@ const Packages = () => {
           setCurrentPage(response?.data?.currentPage)
           setTotalPages(response?.data?.totalPages)
           setTotalItems(response?.data?.totalItems)
+          setAddWarning(true);
+          setEditWarning(true)
+          setDeleteWarning(true);
+          setSpecialFeatureWarning(true);
           toast.success(response?.data?.message)
         }
       }
@@ -262,7 +282,7 @@ const Packages = () => {
           setPlanIdPriceData(response?.data?.plans?.price);
           setPlanIdValueData(response?.data?.plans?.value);
           setPlanIdStudentLimitData(response?.data?.plans?.studentLimit);
-          setPlanIdIntervalData(response?.data?.plans?.type);   //Sir ye line edit kr dijiye wo chl jayega
+          setPlanIdIntervalData(response?.data?.plans?.type);
           setPlanIdStatusData(response?.data?.plans?.status);
           toast.success(response?.data?.message)
         }
@@ -323,6 +343,77 @@ const Packages = () => {
     }
   }
 
+
+
+  const getAllActiveInActiveSpeFeat = async () => {
+    setUpdateSpecialFeatureWarning(false);
+    try {
+      var response = await getAllActiveInActiveSpeFeatApi(currentSchoolPlanId);
+      console.log(response)
+      if (response?.status === 200) {
+        if (response?.data?.status === 'success') {
+          console.log(response)
+          SetAllActiveInActiveSpeFeature(response?.data?.features);
+        }
+      }
+      else {
+        console.log(response?.data?.message);
+      }
+    }
+    catch (error) {
+      console.log(error, 'catch 1')
+    }
+  }
+
+
+  const getAllSpecialFeature = async (planIdd) => {
+    try {
+      setCurrentSchoolPlanId(planIdd);
+      var response = await getAllActiveInActiveSpeFeatApi(planIdd);
+      console.log(response)
+      if (response?.status === 200) {
+        if (response?.data?.status === 'success') {
+          // toast.success(response?.data?.message)
+          SetAllActiveInActiveSpeFeature(response?.data?.features);
+        }
+      }
+      else {
+        console.log(response?.data?.message);
+      }
+    }
+    catch {
+      console.log(error)
+    }
+  }
+
+
+  const UpdateFeatureInPlan = async () => {
+    try {
+      const data = {
+        "addFeature": addFeature,
+        "removeFeature": removeFeature
+      }
+      console.log('3rd', data)
+      var response = await updateSpecialFeatureInSchoolApi(currentSchoolPlanId, data);
+      console.log(response)
+      if (response?.status === 200) {
+        if (response?.data?.status === 'success') {
+          setUpadteSpeFeature(response?.data?.addons);
+          toast.success(response?.data?.message);
+          setTimeout(() => (
+            getAllPlans()
+          ), 1200)
+        }
+      }
+      else {
+        toast.error(response?.data?.message);
+      }
+    }
+    catch (error) {
+      console.log(error, 'error while adding')
+    }
+
+  }
 
 
 
@@ -626,12 +717,17 @@ const Packages = () => {
                           </button>
                           <ul className="dropdown-menu">
                             <li>
-                              <button className="dropdown-item greyText" type="button" data-bs-toggle="offcanvas" data-bs-target="#Edit_staticBackdrop" aria-controls="Edit_staticBackdrop" onClick={() => getPlanById(item.planId)}>
+                              <button className="dropdown-item greyText font14" type="button" data-bs-toggle="offcanvas" data-bs-target="#Edit_staticBackdrop" aria-controls="Edit_staticBackdrop" onClick={() => getPlanById(item.planId)}>
                                 Edit Package
                               </button>
                             </li>
                             <li>
-                              <button className="dropdown-item greyText" type="button" data-bs-toggle="offcanvas" data-bs-target="#Delete_staticBackdrop" aria-controls="Delete_staticBackdrop" onClick={() => DeleteBtnClicked(item.planId)}>
+                              <button className="dropdown-item greyText font14" type="button" data-bs-toggle="offcanvas" data-bs-target="#SpeFeature_staticBackdrop" aria-controls="SpeFeature_staticBackdrop" onClick={() => getAllSpecialFeature(item.planId)}>
+                                Map Features
+                              </button>
+                            </li>
+                            <li>
+                              <button className="dropdown-item greyText font14" type="button" data-bs-toggle="offcanvas" data-bs-target="#Delete_staticBackdrop" aria-controls="Delete_staticBackdrop" onClick={() => DeleteBtnClicked(item.planId)}>
                                 Delete
                               </button>
                             </li>
@@ -649,15 +745,15 @@ const Packages = () => {
                   <ReactPaginate
                     previousLabel={<Icon icon="tabler:chevrons-left" width="1.4em" height="1.4em" />}
                     nextLabel={<Icon icon="tabler:chevrons-right" width="1.4em" height="1.4em" />}
-                    breakLabel={'...'} 
+                    breakLabel={'...'}
                     totalItems={totalItems}
-                    breakClassName={'break-me'} 
-                    pageCount={totalPages} 
-                    marginPagesDisplayed={2} 
+                    breakClassName={'break-me'}
+                    pageCount={totalPages}
+                    marginPagesDisplayed={2}
                     pageRangeDisplayed={10}
-                    onPageChange={handlePageClick} 
-                    containerClassName={'pagination'} 
-                    subContainerClassName={'pages pagination'} 
+                    onPageChange={handlePageClick}
+                    containerClassName={'pagination'}
+                    subContainerClassName={'pages pagination'}
                     activeClassName={'active'}
                   />
                 </div>
@@ -748,7 +844,7 @@ const Packages = () => {
                           <p className='warningHeading'>Successful Updated</p>
                           <p className='greyText warningText pt-2'>Your Changes has been<br />Successfully Saved</p>
                         </div>
-                        <button className='btn contbtn continueButtons text-white' data-bs-dismiss="offcanvas" aria-label="Close" onClick={PageRefreshAdd}>Continue</button>
+                        <button className='btn contbtn continueButtons text-white' data-bs-dismiss="offcanvas" aria-label="Close" onClick={getAllPlans}>Continue</button>
                       </div>
                     </div>
                   </>
@@ -839,7 +935,7 @@ const Packages = () => {
                           <p className='warningHeading'>Successful Updated</p>
                           <p className='greyText warningText pt-2'>Your Changes has been<br />Successfully Saved</p>
                         </div>
-                        <button className='btn contbtn continueButtons text-white' data-bs-dismiss="offcanvas" aria-label="Close" onClick={PageRefreshOnUpdate}>Continue</button>
+                        <button className='btn contbtn continueButtons text-white' data-bs-dismiss="offcanvas" aria-label="Close" onClick={getAllPlans}>Continue</button>
                       </div>
                     </div>
                   </>
@@ -892,7 +988,7 @@ const Packages = () => {
                           <p className='warningHeading'>Successful Deleted</p>
                           <p className='greyText warningText pt-2'>Your data has been<br />Successfully Delete</p>
                         </div>
-                        <button className='btn contbtn continueButtons text-white' data-bs-dismiss="offcanvas" aria-label="Close" onClick={PageRefreshOnDelete}>Continue</button>
+                        <button className='btn contbtn continueButtons text-white' data-bs-dismiss="offcanvas" aria-label="Close" onClick={getAllPlans}>Continue</button>
                       </div>
                     </div>
                   </>
@@ -901,6 +997,133 @@ const Packages = () => {
             </div>
 
           </div>
+
+
+
+
+          {/* ***********************************************************************************************************************************************************************************/}
+          {/* ***********************************************************************************************************************************************************************************/}
+
+
+
+          <div className="offcanvas offcanvas-end p-2" data-bs-backdrop="static" tabIndex="-1" id="SpeFeature_staticBackdrop" aria-labelledby="staticBackdropLabel">
+            <div className="offcanvas-header modalHighborder p-1">
+              <Link type="button" data-bs-dismiss="offcanvas" aria-label="Close">
+                <svg xmlns="http://www.w3.org/2000/svg" width="2em" height="2em" viewBox="0 0 16 16">
+                  <path fill="#008479" fillRule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8" />
+                </svg>
+              </Link>
+              <h2 className="offcanvas-title" id="staticBackdropLabel">Special Features Details</h2>
+            </div>
+            <div className="offcanvas-body p-0">
+              <div>
+                {SpecialFeatureWarning
+                  ?
+
+                  <>
+                    {UpdateSpecialFeatureWarning ? (
+                      <>
+                        <p className='modalLightBorder p-2 mb-0'>Special Features</p>
+                        <div className="ps-3 pe-3">
+                          <table className="table table-striped mt-2">
+                            <thead>
+                              <tr height='40px'>
+                                <th><h2>Details</h2></th>
+                                <td className='text-end'>
+                                  <Link className='greenText text-decoration-none' onClick={getAllActiveInActiveSpeFeat}>
+                                    <h2>Add Features</h2>
+                                  </Link>
+                                </td>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {allActiveInActiveSpeFeature.map((item, index) => (
+                                <tr height='40px' key={index}>
+                                  <td><h3 className='greyText ps-2'>{item?.featureName}</h3></td>
+                                  <td className='text-end'>
+                                    {item?.planStatus ? (
+                                      <h3 className='p-1 pe-2'>
+                                        <Icon icon="simple-icons:ticktick" width="1.5em" height="1.5em" style={{ color: '#00A67E', cursor: 'pointer' }} />
+                                      </h3>
+                                    ) : (
+                                      <h3 className='ps-3'>---</h3>
+                                    )}
+                                  </td>
+                                </tr>
+                              ))}
+                            </tbody>
+                          </table>
+                          <p className='text-center p-3'>
+                            <button className='btn cancelButtons ms-3' onClick={getAllPlans}>Back</button>
+                          </p>
+                        </div>
+                      </>
+                    ) : (
+                      <>
+                        <p className='modalLightBorder p-2 mb-0'>Special Features</p>
+                        <div className="ps-3 pe-3">
+                          <table className="table table-striped mt-2">
+                            <thead>
+                              <tr height='40px'>
+                                <th><h2>Details</h2></th>
+                                <td className='greenText'></td>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {allActiveInActiveSpeFeature.map((item, index) => (
+                                <tr height='40px' key={index}>
+                                  <td><h3 className='greyText ps-2'>{item?.featureName}</h3></td>
+                                  <td className='text-end'>
+                                    {item?.planStatus ? (
+                                      <h3 className='p-1 pe-1'>
+                                        <Icon icon="ion:checkbox" width="1.5em" height="1.5em" style={{ color: '#00A67E', cursor: 'pointer' }} />
+                                      </h3>
+                                    ) : (
+                                      <h3 onClick={() => handleCheckboxChange(item.planFeatureId)}>
+                                        {isCheckedFeature.includes(item.planFeatureId) ? (
+                                          <p className='p-1 pe-1'>
+                                            <Icon icon="ion:checkbox" width="1.5em" height="1.5em" style={{ color: '#00A67E', cursor: 'pointer' }} />
+                                          </p>
+                                        ) : (
+                                          <Icon icon="bxs:checkbox" width="2.1em" height="2.1em" style={{ color: '#fff', cursor: 'pointer' }} />
+                                        )}
+                                      </h3>
+                                    )}
+                                  </td>
+                                </tr>
+                              ))}
+                            </tbody>
+                          </table>
+                          <p className='text-center p-3'>
+                            <button className='btn updateButtons text-white' onClick={UpdateFeatureInPlan}>Update</button>
+                            <button className='btn cancelButtons ms-3' data-bs-dismiss="offcanvas" aria-label="Close" onClick={getAllPlans}>Cancel</button>
+                          </p>
+                        </div>
+                      </>
+                    )}
+                  </>
+
+                  :
+                  <>
+                    <div>
+                      <p className='modalLightBorder p-2 mb-0'>Special Features</p>
+                      <div className="mt-3  ">
+                        <div className='correvtSVG p-3 pt-4 rounded-circle'><img src="./images/Correct.svg" alt="" /></div>
+                        <div className="updatetext border m-4 border-2  ms-5 greydiv rounded-3 text-center greyText p-5">
+                          <p className='warningHeading'>Successful Updated</p>
+                          <p className='greyText warningText pt-2'>Your Changes has been<br />Successfully Saved</p>
+                        </div>
+                        <button className='btn contbtn continueButtons text-white' data-bs-dismiss="offcanvas" aria-label="Close" onClick={getAllPlans}>Continue</button>
+                      </div>
+                    </div>
+                  </>
+
+                }
+
+              </div>
+            </div>
+          </div>
+
 
 
 

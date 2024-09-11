@@ -144,7 +144,7 @@ const AllSchools = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [pageNo, setPageNo] = useState(1);
-  const [pageSize, setPageSize] = useState(5);
+  const [pageSize, setPageSize] = useState(10);
 
   // const [searchKeyData, setSearchKeyData] = useState('');
 
@@ -263,7 +263,7 @@ const AllSchools = () => {
           setSchoolData(response?.data?.schools);
           setCurrentPage(response?.data?.currentPage)
           setTotalPages(response?.data?.totalPages)
-          toast.success(response.data.message)
+          // toast.success(response.data.message)
         }
       }
       else {
@@ -321,6 +321,9 @@ const AllSchools = () => {
           if (response.data.status === 'success') {
             setEditWarning(!EditWarning);
             toast.success(response?.data?.message)
+            setTimeout(() => (
+              window.location.reload()
+            ), 1200);
           }
         } else {
           toast.error(response?.error);
@@ -339,6 +342,10 @@ const AllSchools = () => {
           if (response.data.status === 'success') {
             setDeleteWarning(!DeleteWarning)
             toast.success(response?.data?.message)
+            setTimeout(() => (
+              window.location.reload()
+            ), 1200);
+            
           }
         }
         else {
@@ -418,11 +425,11 @@ const AllSchools = () => {
       const isChecked = prev.includes(featureId);
 
       if (isChecked) {
-        setRemoveFeature((prev) => [...prev, featureId]);
         setAddFeature((prev) => prev.filter((id) => id !== featureId));
+        setRemoveFeature((prev) => [...new Set([...prev, featureId])]); 
         return prev.filter((id) => id !== featureId);
       } else {
-        setAddFeature((prev) => [...prev, featureId]);
+        setAddFeature((prev) => [...new Set([...prev, featureId])]); 
         setRemoveFeature((prev) => prev.filter((id) => id !== featureId));
         return [...prev, featureId];
       }
