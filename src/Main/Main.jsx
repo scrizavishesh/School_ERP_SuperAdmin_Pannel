@@ -7,7 +7,7 @@ import ViewSchoolDetails from '../Pages/ViewSchoolDetails';
 import AddSchool from '../Pages/AddSchool';
 import Addon from '../Pages/Addon';
 import AddAddon from '../Pages/AddAddon';
-import AddFeature from '../Pages/AddPermission';
+import AddPermission from '../Pages/AddPermission';
 import Packages from '../Pages/Packages';
 import Subscription from '../Pages/Subscription';
 import Request from '../Pages/Request';
@@ -33,7 +33,7 @@ const Main = () => {
           <Route path="/addSchoolsPage" element={<AddSchool />} />
           <Route path="/addons" element={<Addon />} />
           <Route path="/addAddons" element={<AddAddon />} />
-          <Route path="/addfeatures" element={<AddFeature />} />
+          <Route path="/addPermission" element={<AddPermission />} />
           <Route path="/allPackagesPage" element={<Packages />} />
           <Route path="/subscriptionPage" element={<Subscription/>} />
           <Route path="/requestPage" element={<Request />} />

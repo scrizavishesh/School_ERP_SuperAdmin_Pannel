@@ -197,7 +197,7 @@ const Addon = () => {
           setAllSpeFeature(response?.data?.addons);
           setCurrentPage(response?.data?.currentPage)
           setTotalPages(response?.data?.totalPages)
-          toast.success(response?.data?.message)
+          // toast.success(response?.data?.message)
         }
       }
       else {
@@ -354,11 +354,11 @@ const Addon = () => {
                 <nav className='breadcrumnav' aria-label="breadcrumb">
                   <ol className="breadcrumb">
                     <li className="breadcrumb-item"><Link to="#" className='greyText text-decoration-none'><h3>Home &gt; </h3></Link></li>
-                    <li className="breadcrumb-item active greenText" aria-current="page"><h3> Addon</h3></li>
+                    <li className="breadcrumb-item active greenText" aria-current="page"><h3> Features</h3></li>
                   </ol>
                 </nav>
               </div>
-              <div className="row mb-3 for-margin-top"><h2>Manage Addons</h2></div>
+              <div className="row mb-3 for-margin-top"><h2>Manage Feature</h2></div>
             </div>
             <div className="col-lg-5 col-md-8 col-sm-12">
               <div className="row">
@@ -372,7 +372,7 @@ const Addon = () => {
                 </div>
                 <div className="col-md-3 col-sm-6 text-end">
                   <div className="row">
-                    <Link className="btn ps-0 pe-0 addButtons text-white" type="submit" to='/addAddons'><h2 className='textVerticalCenter'>+ ADD Addon</h2></Link>
+                    <Link className="btn ps-0 pe-0 addButtons text-white" type="submit" to='/addAddons'><h2 className='textVerticalCenter'>+ ADD Feature</h2></Link>
                   </div>
                 </div>
               </div>
@@ -386,7 +386,7 @@ const Addon = () => {
 
                   <tr>
                     <th><h2>#</h2></th>
-                    <th><h2>Bundle Name</h2></th>
+                    <th><h2>Feature Name</h2></th>
                     <th><h2>Feature</h2></th>
                     <th><h2>Status <img src="./images/StatusArrow.svg" alt="" /></h2></th>
                     <th><h2>Action</h2></th>
@@ -412,7 +412,7 @@ const Addon = () => {
                               </li> */}
                             <li className='p-1'>
                               <button className="dropdown-item greyText" type="button" data-bs-toggle="offcanvas" data-bs-target="#Edit_bundle" aria-controls="Edit_bundle" onClick={(e) => { setEditBundleName(item.featureName), setEditBundleId(item.planFeatureId) }}>
-                                Edit Bundle
+                                Edit Feature
                               </button>
                             </li>
                             <li className='p-1'>
@@ -536,7 +536,7 @@ const Addon = () => {
                   <path fill="#008479" fillRule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8" />
                 </svg>
               </Link>
-              <h2 className="offcanvas-title" id="staticBackdropLabel">Edit Bundle Name</h2>
+              <h2 className="offcanvas-title" id="staticBackdropLabel">Edit Feature Name</h2>
             </div>
             <div className="offcanvas-body p-0">
               <div>
@@ -546,7 +546,7 @@ const Addon = () => {
                     <div className="p-3">
                       <form>
                         <div className="mb-3">
-                          <label htmlFor="BundleName" className="form-label greyText">Bundle Name</label>
+                          <label htmlFor="BundleName" className="form-label greyText">Feature Name</label>
                           <input type="text" className={`form-control p-2 formcontrolinput ${newBundleNameError ? 'border border-danger' : ''}`} id="BundleName" defaultValue={EditBundleName} onChange={(e) => updatingBundleName(e.target.value)} />
                           <span className='text-danger'>{newBundleNameError}</span>
                         </div>

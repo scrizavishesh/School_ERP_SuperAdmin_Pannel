@@ -260,7 +260,7 @@ const Packages = () => {
           setEditWarning(true)
           setDeleteWarning(true);
           setSpecialFeatureWarning(true);
-          toast.success(response?.data?.message)
+          // toast.success(response?.data?.message)
         }
       }
       else {

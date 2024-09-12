@@ -169,7 +169,6 @@ const AllSchools = () => {
   const [DeleteWarning, setDeleteWarning] = useState(true);
   const [EditWarning, setEditWarning] = useState(true);
   const [SpecialFeatureWarning, setSpecialFeatureWarning] = useState(true);
-
   const [UpdateSpecialFeatureWarning, setUpdateSpecialFeatureWarning] = useState(true);
 
   const [statussError, setStatusError] = useState('')
@@ -202,29 +201,39 @@ const AllSchools = () => {
     setPageNo(event.selected + 1); // as event start from 0 index
   };
 
-  const PageRefresh = () => {
-    setUpdateSpecialFeatureWarning(!UpdateSpecialFeatureWarning);
-    setRefreshPage(!refreshPage);
-  }
-
-  const PageRefreshOnDelete = () => {
-    setDeleteWarning(!DeleteWarning);
-    setRefreshDelete(!refreshDelete);
-  }
-
-  const PageRefreshOnUpdate = () => {
-    setEditWarning(!EditWarning);
-    setRefreshUpdate(!refreshUpdate);
-  }
-
-  const PageRefreshSpeFeaUpdate = () => {
-    setSpecialFeatureWarning(!SpecialFeatureWarning);
-    setRefreshSpeFeaUpdate(!refreshSpeFeaUpdate);
-  }
-
-
   const DeleteBtnClicked = (id) => {
     setDeleteSchoolId(id)
+  }
+
+  const getAllSchoolData = async () => {
+    try {
+      setloaderState(true);
+      var response = await getSchoolDataApi(searchKeyData, pageNo, pageSize);
+      console.log(response)
+      if (response?.status === 200) {
+        if (response?.data?.status === 'success') {
+          setloaderState(false);
+          setSchoolData(response?.data?.schools);
+          setCurrentPage(response?.data?.currentPage)
+          setTotalPages(response?.data?.totalPages)
+          setDeleteWarning(true);
+          setEditWarning(true);
+          setUpdateSpecialFeatureWarning(true);
+          // toast.success(response.data.message)
+        }
+        else {
+          setloaderState(false);
+        }
+      }
+      else {
+        setloaderState(false);
+        console.log(response.data.message)
+      }
+    }
+    catch (error) {
+      setloaderState(false);
+      console.log(error)
+    }
   }
 
   const UpdateFeatureInPlan = async () => {
@@ -239,39 +248,20 @@ const AllSchools = () => {
       if (response?.status === 200) {
         if (response?.data?.status === 'success') {
           setUpadteSpeFeature(response?.data?.addons);
-          toast.success(response?.data?.message);
+          // toast.success(response?.data?.message);
+        }
+        else {
+          setloaderState(false);
         }
       }
       else {
-        toast.error(response?.data?.message);
+        setloaderState(false);
+        console.log(response.data.message)
       }
     }
     catch (error) {
-      console.log(error, 'error while adding')
-    }
-
-  }
-
-  const getAllSchoolData = async () => {
-    try {
-      setloaderState(true);
-      var response = await getSchoolDataApi(searchKeyData, pageNo, pageSize);
-      console.log(response)
-      if (response?.status === 200) {
-        if (response?.data?.status === 'success') {
-          setloaderState(false);
-          setSchoolData(response?.data?.schools);
-          setCurrentPage(response?.data?.currentPage)
-          setTotalPages(response?.data?.totalPages)
-          // toast.success(response.data.message)
-        }
-      }
-      else {
-        console.log(response?.data?.message);
-      }
-    }
-    catch {
-
+      setloaderState(false);
+      console.log(error)
     }
   }
 
@@ -292,18 +282,18 @@ const AllSchools = () => {
           toast.success(response?.data?.message)
           setloaderState(false);
         }
-        else{
-          toast.error('Error in loading')
+        else {
           setloaderState(false);
         }
       }
       else {
         setloaderState(false);
-        console.log(response?.data?.message);
+        console.log(response.data.message)
       }
     }
-    catch {
-
+    catch (error) {
+      setloaderState(false);
+      console.log(error)
     }
   }
 
@@ -325,11 +315,18 @@ const AllSchools = () => {
               window.location.reload()
             ), 1200);
           }
-        } else {
-          toast.error(response?.error);
+          else {
+            setloaderState(false);
+          }
         }
-      } catch (error) {
-        console.error('Error during update:', error);
+        else {
+          setloaderState(false);
+          console.log(response.data.message)
+        }
+      }
+      catch (error) {
+        setloaderState(false);
+        console.log(error)
       }
     }
   }
@@ -344,17 +341,23 @@ const AllSchools = () => {
             toast.success(response?.data?.message)
             setTimeout(() => (
               window.location.reload()
-            ), 1200);
-            
+            ), 1000);
+
+          }
+          else {
+            toast.error(response?.data?.message);
           }
         }
         else {
-          toast.error(response?.error);
+          toast.error(response?.data?.message);
         }
       }
       catch (error) {
         console.error('Error during login:', error);
       }
+    }
+    else {
+      toast.error('Please Agree First !!')
     }
   }
 
@@ -407,7 +410,7 @@ const AllSchools = () => {
       if (response?.status === 200) {
         if (response?.data?.status === 'success') {
           setAllPlan(response?.data?.plans);
-          toast.success(response?.data?.message)
+          // toast.success(response?.data?.message)
         }
       }
       else {
@@ -426,10 +429,10 @@ const AllSchools = () => {
 
       if (isChecked) {
         setAddFeature((prev) => prev.filter((id) => id !== featureId));
-        setRemoveFeature((prev) => [...new Set([...prev, featureId])]); 
+        setRemoveFeature((prev) => [...new Set([...prev, featureId])]);
         return prev.filter((id) => id !== featureId);
       } else {
-        setAddFeature((prev) => [...new Set([...prev, featureId])]); 
+        setAddFeature((prev) => [...new Set([...prev, featureId])]);
         setRemoveFeature((prev) => prev.filter((id) => id !== featureId));
         return [...prev, featureId];
       }
@@ -597,7 +600,7 @@ const AllSchools = () => {
                           </button>
                           <ul className="dropdown-menu">
                             <li>
-                              <button className="dropdown-item greyText" type="button" data-bs-toggle="offcanvas" data-bs-target="#Edit_staticBackdrop" aria-controls="Edit_staticBackdrop" onClick={() => getSchoolDataById(item.schoolId)}>
+                              <button className="dropdown-item greyText" type="button" data-bs-toggle="offcanvas" data-bs-target="#Edit_staticBackdrop" aria-controls="Edit_staticBackdrop" onClick={() => getSchoolDataById(item.schoolBusinessId)}>
                                 Edit
                               </button>
                             </li>
@@ -607,7 +610,7 @@ const AllSchools = () => {
                               </button>
                             </li>
                             <li>
-                              <button className="dropdown-item greyText" type="button" data-bs-toggle="offcanvas" data-bs-target="#Delete_staticBackdrop" aria-controls="Delete_staticBackdrop" onClick={() => DeleteBtnClicked(item.schoolId)}>
+                              <button className="dropdown-item greyText" type="button" data-bs-toggle="offcanvas" data-bs-target="#Delete_staticBackdrop" aria-controls="Delete_staticBackdrop" onClick={() => DeleteBtnClicked(item.schoolBusinessId)}>
                                 Delete
                               </button>
                             </li>
@@ -695,7 +698,7 @@ const AllSchools = () => {
                         </form>
                         <p className='text-center p-3'>
                           <button className='btn updateButtons text-white' onClick={() => UpdateSchoolByID()}>Update</button>
-                          <button className='btn cancelButtons ms-3' data-bs-dismiss="offcanvas" aria-label="Close" onClick={PageRefresh}>Cancel</button>
+                          <button className='btn cancelButtons ms-3' data-bs-dismiss="offcanvas" aria-label="Close" onClick={getAllSchoolData}>Cancel</button>
                         </p>
                       </div>
                     </div>
@@ -710,7 +713,7 @@ const AllSchools = () => {
                           <p className='warningHeading'>Successful Updated</p>
                           <p className='greyText warningText pt-2'>Your Changes has been<br />Successfully Saved</p>
                         </div>
-                        <button className='btn contbtn continueButtons text-white' data-bs-dismiss="offcanvas" aria-label="Close" onClick={PageRefreshOnUpdate}>Continue</button>
+                        <button className='btn contbtn continueButtons text-white' data-bs-dismiss="offcanvas" aria-label="Close" onClick={getAllSchoolData}>Continue</button>
                       </div>
                     </div>
                   </>
@@ -833,7 +836,7 @@ const AllSchools = () => {
                           <p className='warningHeading'>Successful Updated</p>
                           <p className='greyText warningText pt-2'>Your Changes has been<br />Successfully Saved</p>
                         </div>
-                        <button className='btn contbtn continueButtons text-white' data-bs-dismiss="offcanvas" aria-label="Close" onClick={PageRefreshSpeFeaUpdate}>Continue</button>
+                        <button className='btn contbtn continueButtons text-white' data-bs-dismiss="offcanvas" aria-label="Close" onClick={getAllSchoolData}>Continue</button>
                       </div>
                     </div>
                   </>
@@ -870,7 +873,7 @@ const AllSchools = () => {
                       <p className='modalLightBorder p-2'>School List</p>
                       <p className='text-center p-3'> <img src="./images/errorI.svg" className='img-fluid' alt="" /></p>
                       <p className='text-center warningHeading'>Are you Sure?</p>
-                      <p className='text-center greyText warningText pt-2'>This Action will be permanently delete<br />the Profile Data</p>
+                      <p className='text-center greyText warningText pt-2'>This Action will be permanently delete<br />the School Data</p>
                       <p className='text-center warningText p-2'><input className="form-check-input formdltcheck me-2" type="checkbox" value="" id="flexCheckChecked" onChange={(e) => setIsChecked(e.target.checked)} />I Agree to delete the Profile Data</p>
                       <p className='text-center p-3'>
                         <button className='btn deleteButtons text-white' onClick={() => DeleteSchoolIdData(deleteSchoolId)}>Delete</button>
@@ -888,7 +891,7 @@ const AllSchools = () => {
                           <p className='warningHeading'>Successful Deleted</p>
                           <p className='greyText warningText pt-2'>Your data has been<br />Successfully Delete</p>
                         </div>
-                        <button className='btn contbtn continueButtons text-white' data-bs-dismiss="offcanvas" aria-label="Close" onClick={PageRefreshOnDelete}>Continue</button>
+                        <button className='btn contbtn continueButtons text-white' data-bs-dismiss="offcanvas" aria-label="Close" onClick={getAllSchoolData}>Continue</button>
                       </div>
                     </div>
                   </>

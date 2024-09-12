@@ -190,7 +190,7 @@ const AddPermission = () => {
                   <Link to="#" className='greyText text-decoration-none'><h2>Home &gt; </h2></Link>
                 </li>
                 <li className="breadcrumb-item active greenText" aria-current="page">
-                  <h2>Add Feature</h2>
+                  <h2>Add Permission</h2>
                 </li>
               </ol>
             </nav>
@@ -203,7 +203,7 @@ const AddPermission = () => {
           </div>
         </div>
 
-        <h2>Add Feature</h2>
+        <h2>Add Permission</h2>
         <div className="row mb-3"></div>
         <div className='cardradius bg-white p-3'>
           <form>

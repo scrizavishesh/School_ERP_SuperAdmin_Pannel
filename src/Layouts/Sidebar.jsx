@@ -216,9 +216,60 @@ const Sidebar = () => {
         localStorage.setItem('activeLink', link);
     };
 
-    useEffect(() => {
+    //automatic logout
 
-    }, [token])
+
+    useEffect(() => {
+        const inactivityPeriod = 23 * 60 * 60 * 1000; // 24 hours in milliseconds
+
+        let logoutTimer = setTimeout(() => {
+            handleLogout();
+        }, inactivityPeriod);
+
+        const resetTimer = () => {
+            clearTimeout(logoutTimer);
+            logoutTimer = setTimeout(() => {
+                handleLogout();
+            }, inactivityPeriod); // Reset the timer on any activity
+        };
+
+        // Listen for user activities
+        window.addEventListener('mousemove', resetTimer);
+        window.addEventListener('keypress', resetTimer);
+
+        // Cleanup the event listeners on unmount
+        return () => {
+            clearTimeout(logoutTimer);
+            window.removeEventListener('mousemove', resetTimer);
+            window.removeEventListener('keypress', resetTimer);
+        };
+    }, []);
+
+
+    // useEffect(() => {
+    //     const logoutTimer = setTimeout(() => {
+    //         handleLogout();
+    //     }, 60000); // 3 minutes = 180000 ms
+
+    //     const resetTimer = () => {
+    //         clearTimeout(logoutTimer);
+    //         setTimeout(() => {
+    //             handleLogout();
+    //         }, 60000); // Reset the timer on any activity
+    //     };
+
+    //     // Listen for user activities
+    //     window.addEventListener('mousemove', resetTimer);
+    //     window.addEventListener('keypress', resetTimer);
+
+    //     // Cleanup the event listeners on unmount
+    //     return () => {
+    //         clearTimeout(logoutTimer);
+    //         window.removeEventListener('mousemove', resetTimer);
+    //         window.removeEventListener('keypress', resetTimer);
+    //     };
+    // }, []);
+
 
     const [LogoutSuccess, setLogoutSuccess] = useState(true);
     const handleLogout = async () => {
@@ -229,6 +280,13 @@ const Sidebar = () => {
                 if (response?.data?.status === 'success') {
                     localStorage.removeItem('token')
                     setLogoutSuccess(false);
+                    setTimeout(() => {
+                        navigate('/')
+                    }, 600);
+                    setTimeout(() => {
+                        window.location.reload();
+                        window.location.reload();
+                    }, 1000);
                 }
             }
             else {
@@ -238,12 +296,6 @@ const Sidebar = () => {
         catch {
 
         }
-    }
-
-    const handleContinue = () => {
-        window.location.reload();
-        window.location.reload();
-        navigate('/')
     }
 
 
@@ -302,10 +354,10 @@ const Sidebar = () => {
                             </Link>
                         </li>
                         <li>
-                            <Link to="/addons" className={`menus p-2 d-flex borderBottom ${sidebarOpen === '' ? 'justify-content-center' : ''} ${activeLink === 'addons' || activeLink === 'addAddons' || activeLink === 'addfeatures' ? 'active' : ''}`} data-bs-toggle="collapse" data-bs-target="#collapseAddon" onClick={() => handleActiveDropAndLink('addons')} >
+                            <Link to="/addons" className={`menus p-2 d-flex borderBottom ${sidebarOpen === '' ? 'justify-content-center' : ''} ${activeLink === 'addons' || activeLink === 'addAddons' || activeLink === 'addPermission' ? 'active' : ''}`} data-bs-toggle="collapse" data-bs-target="#collapseAddon" onClick={() => handleActiveDropAndLink('addons')} >
                                 <div className="flex-grow-1">
                                     <Icon icon="mage:dashboard-2" width="1.5em" height="1.5em" />
-                                    <h3 className="menu-text">Addons</h3>
+                                    <h3 className="menu-text">Features</h3>
                                 </div>
                                 <div className="">
                                     {AddonDropOpen ? <Icon icon="ri:arrow-up-s-fill" width="1.5em" height="1.5em" /> : <Icon icon="ri:arrow-down-s-fill" width="1.5em" height="1.5em" />}
@@ -316,21 +368,21 @@ const Sidebar = () => {
                                     <li>
                                         <Link to="/addons" className={`menus p-2 d-flex borderBottom ${sidebarOpen === '' ? 'justify-content-center' : ''} ${activeLink === 'addons' ? 'active' : ''}`} onClick={() => handleActiveLink('addons')} >
                                             <Icon icon="mage:dashboard-2" width="1.5em" height="1.5em" />
-                                            <h3 className="menu-text">Addons Details</h3>
+                                            <h3 className="menu-text">Feature Details</h3>
                                         </Link>
                                     </li>
                                     <li>
-                                        <Link to="/addAddons" className={`menus p-2 d-flex borderBottom ${sidebarOpen === '' ? 'justify-content-center' : ''} ${activeLink === 'addAddons' ? 'active' : ''}`} onClick={() => handleActiveLink('addAddons')} >
+                                        <Link to="/addAddons" className={`menus p-2 d-flex borderBottom ${sidebarOpen === '' ? 'justify-content-center' : ''} ${activeLink === 'addAddons' || activeLink === 'addPermission' ? 'active' : ''}`} onClick={() => handleActiveLink('addAddons')} >
                                             <Icon icon="fluent:note-add-48-regular" width="1.5em" height="1.5em" />
-                                            <h3 className="menu-text">Add Addons</h3>
+                                            <h3 className="menu-text">Add Features</h3>
                                         </Link>
                                     </li>
-                                    <li>
+                                    {/* <li>
                                         <Link to="/addfeatures" className={`menus p-2 d-flex borderBottom ${sidebarOpen === '' ? 'justify-content-center' : ''} ${activeLink === 'addfeatures' ? 'active' : ''}`} onClick={() => handleActiveLink('addfeatures')} >
                                             <Icon icon="mdi:key-add" width="1.5em" height="1.5em" />
                                             <h3 className="menu-text">Add Permissions</h3>
                                         </Link>
-                                    </li>
+                                    </li> */}
                                 </ul>
                             </div>
                         </li>
@@ -465,7 +517,7 @@ const Sidebar = () => {
                                         <p className='warningHeading'>Successful Updated</p>
                                         <p className='greyText warningText pt-2'>Your Changes has been<br />Successfully Saved</p>
                                     </div>
-                                    <button className='btn contbtn continueButtons text-white' type='button' data-bs-dismiss="offcanvas" aria-label="Close" onClick={handleContinue}>Continue</button>
+                                    <button className='btn contbtn continueButtons text-white' type='button' data-bs-dismiss="offcanvas" aria-label="Close" >Continue</button>
                                 </div>
                             </div>
                         </>

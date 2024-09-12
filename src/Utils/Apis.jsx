@@ -3,8 +3,8 @@ const token = `Bearer ${localStorage.getItem('token')}`;
 const forgetTooken = `Bearer ${localStorage.getItem('forgteToken')}`;
 // const token = localStorage.getItem('token');
 
-// const Domain= 'http://192.168.20.109:5000';
-const Domain= 'https://www.auth.edu2all.in';
+const Domain= 'http://192.168.20.109:5000';
+// const Domain= 'https://www.auth.edu2all.in';
 // const Domain= 'http://auth.edu2all.in:5000';
 
 // ***************************************************************************************
@@ -106,7 +106,7 @@ export const getSchoolDataApi = async(searchKeyData, pageNo, pageSize) => {
 
 export const getSchoolDataByIdApi = async (id) => {
     axios.defaults.headers.common["Authorization"] = token;
-    var res = await axios.get(`${Domain}/sch/getSchoolById?schoolId=${id}`);
+    var res = await axios.get(`${Domain}/sch/getSchoolById?schoolBusinessId=${id}`);
     if (res) {
         return res;
     }else{
@@ -280,7 +280,7 @@ export const updateSpeFeaNameApi = async(id , data) => {
 }
 
 
-export const addNewAddonApi = async (data) => {
+export const addNewSpecialFeatureApi = async (data) => {
     axios.defaults.headers.common["Authorization"] = token;
     var res = await axios.post(`${Domain}/fea/addFeature`, data );
     if (res) {
@@ -494,7 +494,7 @@ export const RequestUpdatePutApi = async(datares) =>{
 
 
 
-// ################### specialfeature and addon Apis start  ####################### 
+// ################### specialfeature and SpecialFeature Apis start  ####################### 
 
 // GetAll 
 
@@ -527,5 +527,5 @@ export const SpecialFeaDeleteApi = async(id) =>{
 
 
 
-// ################### specialfeature and addon Apis end  ####################### 
+// ################### specialfeature and SpecialFeature Apis end  ####################### 
 

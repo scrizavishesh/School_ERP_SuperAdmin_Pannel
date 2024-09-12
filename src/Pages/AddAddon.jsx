@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import styled from 'styled-components';
 import { Link, useNavigate } from 'react-router-dom';
-import { addNewAddonApi } from '../Utils/Apis';
+import { addNewSpecialFeatureApi } from '../Utils/Apis';
 import toast, { Toaster } from 'react-hot-toast';
 
 const Container = styled.div`
@@ -45,7 +45,7 @@ const Container = styled.div`
 
 
 
-const AddAddon = () => {
+const AddSpecialFeature = () => {
 
   const navigate = useNavigate();
 
@@ -117,7 +117,7 @@ const AddAddon = () => {
   };
 
 
-  const AddNewAddon = async () => {
+  const AddNewSpecialFeature = async () => {
     if (validateFields()) {
       if (FeatureNameError === '' && IdentityNameError === '' && statussError === '') {
         console.log('valid')
@@ -128,12 +128,14 @@ const AddAddon = () => {
             "status": statuss
           }
           console.log(data)
-          var response = await addNewAddonApi(data);
+          var response = await addNewSpecialFeatureApi(data);
           if (response?.status === 200) {
             console.log(response)
             if (response?.data?.status === 'success') {
               toast.success(response?.data?.message)
-              navigate('/addons')
+              setTimeout(() => {
+                navigate('/addPermission')
+              }, 1000);
             }
           }
           else {
@@ -162,10 +164,10 @@ const AddAddon = () => {
               <nav className='breadcrumnav' aria-label="breadcrumb">
                 <ol className="breadcrumb">
                   <li className="breadcrumb-item"><Link to="#" className='greyText text-decoration-none'><h2>Home &gt; </h2></Link></li>
-                  <li className="breadcrumb-item active greenText" aria-current="page"><h2> Add Addon</h2></li>
+                  <li className="breadcrumb-item active greenText" aria-current="page"><h2> Add Feature</h2></li>
                 </ol>
               </nav>
-              <h2>Add Addon</h2>
+              <h2>Add Feature</h2>
             </div>
             <div className="col-md-3 col-sm-12">
               <div className="row">
@@ -181,8 +183,8 @@ const AddAddon = () => {
             <form>
               <div className="row">
                 <div className="col-md-4 col-sm-12">
-                  <label htmlFor="BundleName" className="form-label greyText">Addon Feature Name</label>
-                  <input type="text" className={`form-control ${FeatureNameError ? 'border-1 border-danger' : ''} `} id="inputSchlEmail" placeholder='Enter Addon Feature Name' onChange={handleFeatureNameChange} />
+                  <label htmlFor="BundleName" className="form-label greyText">Feature Name</label>
+                  <input type="text" className={`form-control ${FeatureNameError ? 'border-1 border-danger' : ''} `} id="inputSchlEmail" placeholder='Enter Feature Name' onChange={handleFeatureNameChange} />
                   <span className="text-danger">{FeatureNameError}</span>
                 </div>
                 <div className="col-md-4 col-sm-12">
@@ -201,7 +203,7 @@ const AddAddon = () => {
                 </div>
               </div>
               <p className='text-center p-3'>
-                <button className='btn addButtons text-white' onClick={AddNewAddon} type='button'>Add Addon</button>
+                <button className='btn addButtons text-white' onClick={AddNewSpecialFeature} type='button'>Add SpecialFeature</button>
                 <button className='btn cancelButtons ms-3' onClick={handleCancel}  type='button'>Cancel</button>
               </p>
             </form>
@@ -213,7 +215,7 @@ const AddAddon = () => {
   )
 }
 
-export default AddAddon
+export default AddSpecialFeature
 
 
 

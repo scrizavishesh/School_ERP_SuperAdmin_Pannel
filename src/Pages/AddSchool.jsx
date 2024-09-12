@@ -75,8 +75,8 @@ const AddSchool = () => {
   const [schoolPhone, setSchoolPhone] = useState('')
   const [schoolPhoneError, setSchoolPhoneError] = useState('')
 
-  const [schoolId, setSchoolId] = useState('')
-  const [schoolIdError, setSchoolIdError] = useState('')
+  // const [schoolId, setSchoolId] = useState('')
+  // const [schoolIdError, setSchoolIdError] = useState('')
 
   const [schoolEmail, setSchoolEmail] = useState('')
   const [schoolEmailError, setSchoolEmailError] = useState('')
@@ -116,6 +116,7 @@ const AddSchool = () => {
 
 
   const getAllPlans = async () => {
+    setloaderState(true)
     try {
       const searchKey = ''
       const page = ''
@@ -124,14 +125,20 @@ const AddSchool = () => {
       if (response?.status === 200) {
         if (response?.data?.status === 'success') {
           setAllPlan(response?.data?.plans);
+          setloaderState(false)
+        }
+        else {
+          setloaderState(false)
+          toast.error(response?.data.message);
         }
       }
       else {
-        console.log(response?.data?.message);
+        setloaderState(false)
+        toast.error(response?.data.message);
       }
-    }
-    catch {
-
+    } catch (error) {
+      setloaderState(false)
+      console.error('Error during update:', error);
     }
   }
 
@@ -186,16 +193,16 @@ const AddSchool = () => {
     setSchoolPackageError(validateTextFields(newInputValue));
   };
 
-  const handleSchoolIdChange = (e) => {
-    const newInputValue = e.target.value;
-    setSchoolId(newInputValue);
-    setSchoolIdError(validateTextFields(newInputValue));
-  };
+  // const handleSchoolIdChange = (e) => {
+  //   const newInputValue = e.target.value;
+  //   setSchoolId(newInputValue);
+  //   setSchoolIdError(validateTextFields(newInputValue));
+  // };
 
   const handleSchoolLogoChange = (e) => {
     const file = e.target.files[0];
     setSchoolLogo(file);
-    setSchoolLogoError('');
+    setSchoolLogoError(validateImage(file));
   };
 
   const handleAdminNameChange = (e) => {
@@ -230,8 +237,20 @@ const AddSchool = () => {
   const handleAdminPhotoChange = (e) => {
     const file = e.target.files[0];
     setAdminPhoto(file);
-    setAdminPhotoError('');
+    setAdminPhotoError(validateImage(file));
   };
+
+  const validateImage = (value) => {
+    if (!value) {
+      return 'No file selected';
+    }
+    if (value.size < 10240 || value.size > 204800) {
+      const sizeInKB = (value.size / 1024).toFixed(2);
+      return `* File size must be between 10 KB to 200 KB ( Current Size - ${sizeInKB} KB)`;
+    }
+    return '';
+  };
+
 
   // *********************************************************************************
   //                        Validation of all inputs
@@ -299,12 +318,12 @@ const AddSchool = () => {
     } else {
       setSchoolPhoneError('');
     }
-    if (!schoolId) {
-      setSchoolIdError('* School ID is required');
-      isValid = false;
-    } else {
-      setSchoolIdError('');
-    }
+    // if (!schoolId) {
+    //   setSchoolIdError('* School ID is required');
+    //   isValid = false;
+    // } else {
+    //   setSchoolIdError('');
+    // }
     if (!schoolEmail) {
       setSchoolEmailError('* School Email is required');
       isValid = false;
@@ -382,7 +401,7 @@ const AddSchool = () => {
         formData.append("schoolName", schoolName);
         formData.append("schoolAddress", schoolAddress);
         formData.append("schoolPhone", schoolPhone);
-        formData.append("schoolId", schoolId);
+        // formData.append("schoolId", schoolId);
         formData.append("schoolEmail", schoolEmail);
         formData.append("planId", schoolPackage);
         formData.append("schoolImage", schoolLogo);
@@ -400,7 +419,7 @@ const AddSchool = () => {
         if (response?.status === 200) {
           console.log(response)
           if (response?.data?.status === 'success') {
-            toast.success(response?.data?.message)
+            // toast.success(response?.data?.message)
             setloaderState(false)
             setTimeout(() => {
               navigate('/allSchoolsPage')
@@ -478,7 +497,7 @@ const AddSchool = () => {
                           <span className="text-danger">{schoolNameError}</span>
                         </div>
                       </div>
-                      <div className="col-md-6">
+                      {/* <div className="col-md-6">
                         <div className="col-md-12">
                           <label htmlFor="inputSchlName" className="form-label"><h3>School Id*</h3></label>
                         </div>
@@ -488,7 +507,7 @@ const AddSchool = () => {
                         <div className="col-md-12">
                           <span className="text-danger">{schoolIdError}</span>
                         </div>
-                      </div>
+                      </div> */}
                       <div className="col-md-6">
                         <div className="col-md-12">
                           <label htmlFor="inputSchlAdd" className="form-label"><h3>School Address*</h3></label>
