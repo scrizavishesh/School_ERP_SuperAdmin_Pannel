@@ -3,8 +3,8 @@ const token = `Bearer ${localStorage.getItem('token')}`;
 const forgetTooken = `Bearer ${localStorage.getItem('forgteToken')}`;
 // const token = localStorage.getItem('token');
 
-const Domain= 'http://192.168.20.109:5000';
-// const Domain= 'https://www.auth.edu2all.in';
+// const Domain= 'http://192.168.20.109:5000';
+const Domain= 'https://www.auth.edu2all.in';
 // const Domain= 'http://auth.edu2all.in:5000';
 
 // ***************************************************************************************
