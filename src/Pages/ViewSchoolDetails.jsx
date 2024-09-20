@@ -48,7 +48,7 @@ const ViewSchoolDetails = () => {
       if (response?.status === 200) {
         if (response?.data?.status === 'success') {
           setgetSchoolIdData(response?.data?.school);
-          toast.success(response?.data?.message);
+          // toast.success(response?.data?.message);
           setloaderState(false)
         }
       }
@@ -113,7 +113,7 @@ const ViewSchoolDetails = () => {
                 </div>
                 <p className='text-center p-3'>
                   <button className='btn printButton text-white' type='button'>Print</button>
-                  <button className='btn cancelButtons ms-3'>Cancel</button>
+                  <Link className='btn cancelButtons ms-3' to='/'>Cancel</Link>
                 </p>
               </div>
             </div>

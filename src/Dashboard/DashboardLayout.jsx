@@ -15,7 +15,7 @@ const SidebarContainer = styled.div`
     flex-shrink: 0;
     width: ${(props) => (props.sidebarOpen ? '224px' : '64px')};
     /* width: ${(props) => (props.sidebarOpen ? '14%' : '4%')}; */
-    transition: width 0.6s ease, transform 0.6s ease;
+    transition: width 0.3s ease, transform 0.3s ease;
     background-color: var(--sidebarBackground);
     z-index: 2;
 
@@ -26,7 +26,7 @@ const SidebarContainer = styled.div`
         top: 0;
         bottom: 0;
         left: 0;
-        width: 200px; /* Fixed width for small screens */
+        width: 200px; //Fixed width for small screens
     }
 `;
 
@@ -50,7 +50,7 @@ const DashboardLayout = () => {
 
     useEffect(() => {
         const handleResize = () => {
-            setSidebarOpen(window.innerWidth > 1000);
+            setSidebarOpen(window.innerWidth > 1300);
         };
 
         window.addEventListener('resize', handleResize);

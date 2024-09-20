@@ -1,20 +1,64 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import { useSidebarContext } from '../Dashboard/DashboardLayout';
 import { Icon } from '@iconify/react';
+import { getSuperAdminDataApi } from '../Utils/Apis';
+import toast from 'react-hot-toast';
+import DataLoader from './Loader';
 
 const Container = styled.div`
     padding: 0% !important;
     z-index: 1;
 
+
+
 `;
 
 const Navbar = () => {
+
+    const token = localStorage.getItem('token');
     const { toggleSidebar } = useSidebarContext();
+    //loader State
+    const [loaderState, setloaderState] = useState(false);
+    const [data, setData] = useState();
+
+    useEffect(() => {
+        getProfileData();
+    }, [token])
+    
+
+  const getProfileData = async () => {
+    try {
+      setloaderState(true);
+      var response = await getSuperAdminDataApi();
+      console.log(response)
+      if (response?.status === 200) {
+        if (response?.data?.status === 'success') {
+            setData(response?.data)
+            setloaderState(false);
+            // toast.success(response?.data?.message)
+        }
+        else {
+          setloaderState(false);
+        }
+      }
+      else {
+        setloaderState(false);
+        console.log(response.data.message)
+      }
+    }
+    catch (error) {
+      setloaderState(false);
+      console.log(error.message)
+      toast.error(error.message)
+    }
+  }
+
 
     return (
         <Container>
+            { loaderState && ( <DataLoader /> ) }
             <div className="container-fluid bg-white sticky-top">
                 <div className="row p-1">
                     <div className="col-md-4 col-sm-6 col-6">
@@ -41,17 +85,17 @@ const Navbar = () => {
                                 <Icon icon="mingcute:notification-newdot-line" width="1.8em" height="1.8em"  style={{color: '#000'}} />
                             </div>
                             <div className="p-2 ms-auto">
-                                <Link className="btn d-flex p-0" to="#" role="button">
+                                <Link className="d-flex text-black text-decoration-none p-0" to="/">
                                     <div className="row">
                                         <div className="col-3">
                                             <img src="./images/userProfile.png" alt="" width={40} />
                                         </div>
-                                        <div className="col-9 text-start">
+                                        <div className="col-9 text-start d-none d-sm-block">
                                             <div className="row">
-                                                <span className="font14">@admin.school</span>
+                                                <span className="font14">{data?.superAdmin?.adminName}</span>
                                             </div>
                                             <div className="row">
-                                                <span className="font14">admin@skdschool.in</span>
+                                                <span className="font14">{data?.superAdmin?.adminEmail}</span>
                                             </div>
                                         </div>
                                     </div>

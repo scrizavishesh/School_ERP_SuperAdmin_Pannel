@@ -74,6 +74,18 @@ export const setPassApi = async(newpass) => {
 
 
 
+export const getSuperAdminDataApi = async() => {
+    axios.defaults.headers.common["Authorization"] = token;
+    var res = await axios.get(`${Domain}/admin/getSuperAdmin`);
+
+    if (res) {
+        return res;
+    }else{
+       return [];
+    }
+}
+
+
 export const getDashDataApi = async() => {
     axios.defaults.headers.common["Authorization"] = token;
     var res = await axios.get(`${Domain}/sch/getDashData`);
@@ -257,6 +269,17 @@ export const getAllActiveInActiveSpeFeatApi = async(planIdd) => {
     }
 }
 
+export const getSpeFeaByIdApi = async(id) => {
+    axios.defaults.headers.common["Authorization"] = token;
+    var res = await axios.get(`${Domain}/fea/getByFeaId/${id}`);
+
+    if (res) {
+        return res;
+    }else{
+       return [];
+    }
+}
+
 export const getPermBySpeFeaIdApi = async(id) => {
     axios.defaults.headers.common["Authorization"] = token;
     var res = await axios.get(`${Domain}/per/getAllPerByFeaId?featureId=${id}`);
@@ -312,7 +335,7 @@ export const deletePerByidApi = async (id) => {
 
 export const deleteSpeFeaByidApi = async (id) => {
     axios.defaults.headers.common["Authorization"] = token;
-    var res = await axios.delete(`${Domain}/fea/deleteById?feaId=${id}`);
+    var res = await axios.delete(`${Domain}/fea/deleteById/${id}`);
     if (res) {
         return res;
     }else{

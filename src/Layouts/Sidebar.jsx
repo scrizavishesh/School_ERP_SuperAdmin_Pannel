@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import styled from 'styled-components';
 import { Icon } from '@iconify/react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
@@ -174,6 +174,7 @@ const StickyHeader = styled.div`
         }
 
         .toggle-icon {
+            z-index: 999;
             position: absolute;
             right: -15px !important;
             margin-top: 7% !important;
@@ -192,6 +193,30 @@ const Sidebar = () => {
 
     const navigate = useNavigate();
     const token = localStorage.getItem('token');
+    
+    const logoutTimerRef = useRef(null); // Use ref to store the logout timer
+
+    useEffect(() => {
+        const inactivityPeriod = 24 * 60 * 60 * 1000;
+
+        // Set the timer for auto-logout after 24 hours
+        logoutTimerRef.current = setTimeout(() => {
+            handleLogout();
+        }, inactivityPeriod);
+
+        // Cleanup function to clear the timer if the component unmounts
+        return () => {
+            clearTimeout(logoutTimerRef.current);
+        };
+    }, []);
+
+    const handleUserLogout = () => {
+        clearTimeout(logoutTimerRef.current);
+        handleLogout();
+    };
+    
+    
+    
     const { sidebarOpen, toggleSidebar } = useSidebarContext();
 
     const [AddonDropOpen, setAddOnDropOpen] = useState(false);
@@ -218,32 +243,46 @@ const Sidebar = () => {
 
     //automatic logout
 
+    // useEffect(() => {
+    //     const inactivityPeriod = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
 
-    useEffect(() => {
-        const inactivityPeriod = 23 * 60 * 60 * 1000; // 24 hours in milliseconds
+    //     // Set a logout timer for exactly 24 hours
+    //     const logoutTimer = setTimeout(() => {
+    //         handleLogout();
+    //     }, inactivityPeriod);
 
-        let logoutTimer = setTimeout(() => {
-            handleLogout();
-        }, inactivityPeriod);
+    //     // Cleanup the timer on unmount
+    //     return () => {
+    //         clearTimeout(logoutTimer);
+    //     };
+    // }, []);
 
-        const resetTimer = () => {
-            clearTimeout(logoutTimer);
-            logoutTimer = setTimeout(() => {
-                handleLogout();
-            }, inactivityPeriod); // Reset the timer on any activity
-        };
 
-        // Listen for user activities
-        window.addEventListener('mousemove', resetTimer);
-        window.addEventListener('keypress', resetTimer);
+    // useEffect(() => {
+    //     const inactivityPeriod = 23 * 60 * 60 * 1000; // 24 hours in milliseconds
 
-        // Cleanup the event listeners on unmount
-        return () => {
-            clearTimeout(logoutTimer);
-            window.removeEventListener('mousemove', resetTimer);
-            window.removeEventListener('keypress', resetTimer);
-        };
-    }, []);
+    //     let logoutTimer = setTimeout(() => {
+    //         handleLogout();
+    //     }, inactivityPeriod);
+
+    //     const resetTimer = () => {
+    //         clearTimeout(logoutTimer);
+    //         logoutTimer = setTimeout(() => {
+    //             handleLogout();
+    //         }, inactivityPeriod); // Reset the timer on any activity
+    //     };
+
+    //     // Listen for user activities
+    //     window.addEventListener('mousemove', resetTimer);
+    //     window.addEventListener('keypress', resetTimer);
+
+    //     // Cleanup the event listeners on unmount
+    //     return () => {
+    //         clearTimeout(logoutTimer);
+    //         window.removeEventListener('mousemove', resetTimer);
+    //         window.removeEventListener('keypress', resetTimer);
+    //     };
+    // }, []);
 
 
     // useEffect(() => {
@@ -501,7 +540,7 @@ const Sidebar = () => {
                                     <h1 className='mb-2'>Are you Sure?</h1>
                                     <h3 className='greyText'>Are you Sure you want to logout?</h3>
                                     <p className='text-center p-3'>
-                                        <button className='btn deleteButtons text-white' onClick={handleLogout}>Logout</button>
+                                        <button className='btn deleteButtons text-white' onClick={handleUserLogout}>Logout</button>
                                         <button className='btn cancelButtons ms-3' data-bs-dismiss="offcanvas" aria-label="Close">Cancel</button>
                                     </p>
                                 </div>

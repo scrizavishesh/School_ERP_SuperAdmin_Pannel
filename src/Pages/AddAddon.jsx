@@ -134,7 +134,7 @@ const AddSpecialFeature = () => {
             if (response?.data?.status === 'success') {
               toast.success(response?.data?.message)
               setTimeout(() => {
-                navigate('/addPermission')
+                navigate('/addons')
               }, 1000);
             }
           }
@@ -160,23 +160,13 @@ const AddSpecialFeature = () => {
       <Container>
         <div className="container-fluid ps-3 pe-3 pt-2 pb-2">
           <div className="row pt-3">
-            <div className="col-md-9 col-sm-12">
               <nav className='breadcrumnav' aria-label="breadcrumb">
                 <ol className="breadcrumb">
-                  <li className="breadcrumb-item"><Link to="#" className='greyText text-decoration-none'><h2>Home &gt; </h2></Link></li>
+                  <li className="breadcrumb-item"><Link to="/" className='greyText text-decoration-none'><h2>Home &gt; </h2></Link></li>
                   <li className="breadcrumb-item active greenText" aria-current="page"><h2> Add Feature</h2></li>
                 </ol>
               </nav>
               <h2>Add Feature</h2>
-            </div>
-            <div className="col-md-3 col-sm-12">
-              <div className="row">
-                <form className="d-flex" role="search">
-                  <input className="form-control formcontrolsearch" type="search" placeholder="Search" aria-label="Search" />
-                  <button className="btn searchButtons text-white" type="submit"><h2>Search</h2></button>
-                </form>
-              </div>
-            </div>
           </div>
           <div className="row mb-3"></div>
           <div className='cardradius bg-white p-3'>

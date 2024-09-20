@@ -16,6 +16,7 @@ import WebsiteSetting from '../Pages/WebsiteSetting';
 import ManageFaq2 from '../Pages/ManageFaq2';
 import PaymentSetting from '../Pages/PaymentSetting';
 import MyForm from '../Pages/aaa';
+import PageNotFound from '../Pages/PageNotFound';
 
 const Container = styled.div`
 height: 90vh;
@@ -41,7 +42,7 @@ const Main = () => {
           <Route path="/websiteSettingPage" element={<WebsiteSetting />} />
           <Route path="/manageFaqPage" element={<ManageFaq2 />} />
           <Route path="/paymentSettingPage" element={<PaymentSetting />} />
-          <Route path="/a" element={<MyForm/>} />
+          <Route path="*" element={<PageNotFound />} />
         </Routes>
       </Container>
     </>

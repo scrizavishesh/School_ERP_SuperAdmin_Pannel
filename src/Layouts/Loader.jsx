@@ -12,6 +12,7 @@ const DataLoaderContainer = styled.div`
   width: 100%;
   height: 100%;
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
 
@@ -20,6 +21,7 @@ const DataLoaderContainer = styled.div`
 const DataLoader = () => {
     return (
         <DataLoaderContainer>
+            <p className='font20 mb-4' style={{color: "#029084"}}>Loading Data...</p>
             {/* <BallTriangle height={100} width={100} radius={5} color="red" ariaLabel="ball-triangle-loading" wrapperStyle={{}} wrapperClass="" visible={true} /> */}
             <Circles height="100" width="100" color="#008479" ariaLabel="circles-loading" wrapperStyle={{}} wrapperClass="" visible={true} />
             {/* <ThreeCircles visible={true} height="100" width="100" color="#008479" ariaLabel="three-circles-loading" wrapperStyle={{}} wrapperClass="" /> */}
