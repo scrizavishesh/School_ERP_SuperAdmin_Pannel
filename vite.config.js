@@ -6,7 +6,7 @@ export default defineConfig({
   plugins: [react()],
   build: {
     rollupOptions: {
-      external: ['react-paginate', 'yup'], // Add yup here along with react-paginate
+      external: [] // Add yup here along with react-paginate
     },
   },
 })
