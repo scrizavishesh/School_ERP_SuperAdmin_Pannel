@@ -243,19 +243,19 @@ const Sidebar = () => {
 
     //automatic logout
 
-    // useEffect(() => {
-    //     const inactivityPeriod = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
+    useEffect(() => {
+        const inactivityPeriod = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
 
-    //     // Set a logout timer for exactly 24 hours
-    //     const logoutTimer = setTimeout(() => {
-    //         handleLogout();
-    //     }, inactivityPeriod);
+        // Set a logout timer for exactly 24 hours
+        const logoutTimer = setTimeout(() => {
+            handleLogout();
+        }, inactivityPeriod);
 
-    //     // Cleanup the timer on unmount
-    //     return () => {
-    //         clearTimeout(logoutTimer);
-    //     };
-    // }, []);
+        // Cleanup the timer on unmount
+        return () => {
+            clearTimeout(logoutTimer);
+        };
+    }, []);
 
 
     // useEffect(() => {
