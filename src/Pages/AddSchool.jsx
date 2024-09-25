@@ -9,8 +9,8 @@ import toast, { Toaster } from 'react-hot-toast';
 import DataLoader from '../Layouts/Loader';
 import { useForm } from 'react-hook-form';
 //phone input
-import PhoneInput from 'react-phone-input-2';
-import 'react-phone-input-2/lib/style.css';
+// import PhoneInput from 'react-phone-input-2';
+// import 'react-phone-input-2/lib/style.css';
 
 const Container = styled.div`
 
