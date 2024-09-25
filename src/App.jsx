@@ -1,13 +1,14 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { BrowserRouter } from 'react-router-dom';
-import DashboardLayout from './Dashboard/DashboardLayout';
-import WithoutAuth from './Main/WithoutAuth';
+import MainLayout2 from './Dashboard/MainLayout2';
+// import toast, { Toaster } from 'react-hot-toast';
+
+import Login from './Pages/Login';
 
 function App() {
-  
-    const token = localStorage.getItem('token');
-  
-  
+
+  const token = localStorage.getItem('token');
+  // console.log(token)
 
   return (
     <>
@@ -15,13 +16,12 @@ function App() {
       {token 
         ? 
           <BrowserRouter>
-            <DashboardLayout />
+            <MainLayout2 />
           </BrowserRouter>
         :
           <BrowserRouter>
-            <WithoutAuth />
+            <Login />
           </BrowserRouter>
-          
         }
     </>
   );

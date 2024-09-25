@@ -1,8 +1,7 @@
-import React, { useState } from 'react'
+import React from 'react'
 import styled from 'styled-components';
-import { Link, useNavigate } from 'react-router-dom';
-import { getOTPByMailApi } from '../Utils/Apis';
-import toast, { Toaster } from 'react-hot-toast';
+import { Link } from 'react-router-dom';
+
 
 const Container= styled.div`
     height: 100vh;
@@ -36,6 +35,7 @@ const Container= styled.div`
 
 `;
 
+
 const Span14Font = styled.span`
     font-size: 14px;
     font-family: Noto Sans;
@@ -44,78 +44,6 @@ const Span14Font = styled.span`
 
 
 const ForgotPassword = () => {
-
-    const navigate = useNavigate();
-
-    const [mail, setMail] = useState('');
-    const [mailError, setMailError] = useState('');
-
-    const handleEmailChange = (e) => {
-        const email = e.target.value;
-        setMail(email);
-        setMailError(validateMail(email));
-    };
-
-    // *********************************************************************************
-    //                        Validation of all inputs
-    // *********************************************************************************
-
-    const emailRegex =  /^[A-Za-z0-9._]{3,}@[A-Za-z]{3,8}[.]{1}[A-Za-z.]{2,6}$/;
-
-    const validateMail = (value) => {
-        if (!value.trim()) {
-            return 'Email is required';
-        } else if (!emailRegex.test(value)) {
-            return 'Invalid characters !!';
-        }
-        return '';
-        };
-
-    const validateFields = () => {
-        let isValid = true;
-
-        if (!mail) {
-            setMailError('* Email is required');
-            isValid = false;
-        } else {
-            setMailError('');
-        }
-
-        return isValid;
-    };
-
-    // *********************************************************************************
-    //                        Validation of all inputs
-    // *********************************************************************************
-    
-    
-    const getOtp = async() => {
-        if(validateFields()){
-            try{
-                console.log('mail', mail)
-                var response = await getOTPByMailApi(mail);
-                if(response?.status===200){
-                  if(response?.data?.status==='success'){
-                    console.log(response?.data?.token, 'Forget Token')
-                    localStorage.setItem('forgteToken', response?.data?.token)
-                    setTimeout(()=>{
-                        navigate('/verifyOtp');
-                    }, 3000)
-                    toast.success(response?.data?.message)
-                  }
-                  else{
-                    toast.error(response?.data?.message)
-                  }
-                }
-                else{
-                  toast.error(response?.data?.message)
-                }
-            }
-            catch{
-        
-            }
-        }
-    }
     
     return (
         <>
@@ -131,31 +59,28 @@ const ForgotPassword = () => {
                             </div>
                             <div className="row p-5 ms-3 me-3">
                                 <Span14Font>
-                                    <p className='font18 mb-1'>Forgot Your Password?</p>
-                                    <h2 className='text-grey font16 mb-3'>Enter your email to reset it?</h2>
+                                    <p className='m-0'>Forgot Your Password?</p>
+                                    <p className='text-grey'>Enter your email to reset it?</p>
                                     <form>
                                         <div className="mb-3">
-                                            <label htmlFor="exampleInputEmail1" className="form-label font16">Email</label>
-                                            <input type="email" className={`form-control formcontrolinput${mailError ? 'border-1 border-danger' : ''} `} id="exampleInputEmail1" aria-describedby="emailHelp" placeholder='&#xF0E0; Your Email Address' onChange={handleEmailChange}/>
-                                            <span className="text-danger">{mailError}</span>
+                                            <label for="exampleInputEmail1" className="form-label">Email</label>
+                                            <input type="email" className="form-control formcontrolinput" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder='&#xF0E0; Your Email Address'/>
                                         </div>
                                         <div className="d-grid gap-2 col-12 mx-auto">
-                                            <Link type="submit" className="btn btnsubmitOwn text-white" onClick={getOtp}>Confirm</Link>
+                                            <Link type="submit" className="btn btnsubmitOwn text-white" to='/dashboard'>Confirm</Link>
                                         </div>
                                         <div className="d-grid gap-2 col-12 mx-auto">
-                                            <Link type="submit" className="m-2 text-center text-black text-decoration-none" to='/'>
+                                            <Link type="submit" className="m-2 text-center text-black text-decoration-none" to='/setNewPassPage'>
                                                 <svg className='me-2' xmlns="http://www.w3.org/2000/svg" width="1.5em" height="1.5em" viewBox="0 0 16 16">
-                                                    <path fill="#008479" fillRule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8" />
+                                                    <path fill="#008479" fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8" />
                                                 </svg>
-                                                Return to the Login Page
-                                            </Link>
+                                                 Return to the Login Page</Link>
                                         </div>
                                     </form>
                                 </Span14Font>
                             </div>
                         </div>
                     </div>
-                    <Toaster/>
                 </div>
             </Container>
         </>

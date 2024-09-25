@@ -1,17 +1,20 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useRef } from 'react'
 import styled from 'styled-components';
 import toast, { Toaster } from 'react-hot-toast';
+// import  axios  from 'axios';
+import { useNavigate } from 'react-router-dom';
 import { GetApi } from '../Utils/Apis'
 import { SubscriptionDeleteApi } from '../Utils/Apis'
 import { SubscriptionGetByIdApi } from '../Utils/Apis'
 import { SubscriptionPutApi } from '../Utils/Apis'
 import { PlanGetApi } from '../Utils/Apis'
+import ReactPaginate from 'react-paginate'
 import { Link } from 'react-router-dom';
-import DataLoader from '../Layouts/Loader';
-import ReactPaginate from 'react-paginate';
-import { Icon } from '@iconify/react';
-
-
+import { valueOrDefault } from 'chart.js/helpers';
+import { Icon } from '@iconify/react/dist/iconify.js';
+import Flatpickr from "react-flatpickr";
+import "flatpickr/dist/themes/light.css";
+import HashLoader from './HashLoader';
 // ## style css area start ####  
 
 const Container = styled.div`
@@ -120,8 +123,8 @@ th, td{
 font-size: 12px;
 }
 .my-button11 button:hover{
-    background-color: #008479;
-    color: #fff;
+    background-color: #ffffff;
+    color: #000;
 }
 .my-button22{
     display: flex;
@@ -197,6 +200,10 @@ font-size: 12px;
     --bs-btn-hover-bg: #B50000;
     border-radius: 0%;
   }
+  .color{
+    background-color:#B50000 !important ;
+    color: #fff !important;
+  }
   .button11{
     --bs-btn-color: #959494;
     --bs-btn-border-color: #cdcdcd;
@@ -270,6 +277,51 @@ font-size: 12px;
     background-color: #B50000;
     border-color: #B50000;
 }
+.pagination {
+    display: flex;
+    list-style: none;
+    padding: 0;
+}
+
+.pagination li {
+    margin: 0 5px;
+}
+
+.pagination li a {
+    box-shadow: none !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    font-size: var(--font-size-14);
+    border-radius: 8px;
+    border: 1px solid #ddd;
+    text-decoration: none;
+    color: #000;
+    /* background-color: #f5f5f5;
+    transition: background-color 0.3s; */
+}
+
+.pagination li a:hover {
+    background-color: #317a77 !important;
+    color: #fff !important;
+}
+
+.pagination li.active a {
+    background-color: #317a77 !important;
+    color: #fff;
+    font-weight: bold;
+}
+.my-red-tick:checked {
+    background-color: #B50000 ;
+    border-color: #B50000 ;
+    box-shadow: none !important;
+}
+.my-red-tick {
+    box-shadow: none !important;
+    border:0.2px solid #aaa !important;
+}
 /* ########## media query ###########  */
  @media only screen and (max-width: 735px) {
   .for-media-query{
@@ -277,7 +329,7 @@ font-size: 12px;
     flex-direction: column;
   }
 }
-@media only screen and (max-width: 605px) {
+@media only screen and (max-width: 860px) {
     .for-dislay-direction{
         display: flex;
         flex-direction: column;
@@ -294,9 +346,7 @@ const Subscription = () => {
 
   const [putdata, setPutdata] = useState([])
 
-
-  //loader State
-  const [loaderState, setloaderState] = useState(false);
+  const [loader, setLoader] = useState(false)
 
   const [hidedelete, setHidedelete] = useState(false)
   const [showdelete, setShowdelete] = useState(true)
@@ -313,28 +363,29 @@ const Subscription = () => {
   const [successUpdateState, setSuccessUpdateState] = useState(false)
   const [updateState, setUpdateState] = useState(true)
 
+  const [confirmation, setConfirmation] = useState(true)
+
+
+  const [searchKey, setSearchKey] = useState('')
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+
+  const [pageNo, setPageNo] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+
+  const handlePageClick = (event) => {
+    setPageNo(event.selected + 1);
+  };
+
   // ##### validation states ########## 
   const [putphoneNo, setPutphoneNo] = useState()
   const [isValidPassword, setIsValidPassword] = useState(true);
   const [isValidPasswordRequired, setIsValidPasswordRequired] = useState(true);
 
-  const [searchKeyData, setSearchKeyData] = useState('');
-
-  // Pagination
-
-  const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
-  const [pageNo, setPageNo] = useState(1);
-  const [pageSize, setPageSize] = useState(5);
-
-  const [startDate, setStartDate] = useState('');
-  const [lastDate, setLastDate] = useState('');
-
-
-
   const [inputValues, setInputValue] = useState({
     putphoneNo: ''
   });
+
   const [validation, setValidation] = useState({
     putphoneNo: ''
   });
@@ -342,60 +393,79 @@ const Subscription = () => {
   // Validation states start
 
   const [errors, setErrors] = useState({});
+  const [refresh, setRefresh] = useState(false);
+  //  Date range 
+  const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
 
+  // console.log('my both date1 =', startDate)
+  // console.log('my both date2 =', endDate)
+
+  const handleDateChange = (dates) => {
+    setStartDate(formatDate(dates[0] == null ? '' : dates[0]));
+    setEndDate(formatDate(dates[1] == null ? '' : dates[1]))
+    console.log('hello date ')
+  };
+
+  const formatDate = (date) => {
+    if (!date) return '';
+    const year = date.getFullYear();
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    const day = date.getDate().toString().padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  };
 
 
   useEffect(() => {
     showName()
     Getallplan()
-  }, [startDate, pageNo]);
+  }, [pageNo, refresh]);
 
-  const handlePageClick = (event) => {
-    setPageNo(event.selected + 1); // as event start from 0 index
-  };
+  const ClearBothDate = () => {
+    setStartDate('')
+    setEndDate('')
+    showName()
+  }
+
 
   // Get All 
-
-  const showName = async (id) => {
+  const showName = async () => {
+    setLoader(true)
     try {
-      setloaderState(true);
-      const response = await GetApi(searchKeyData, pageNo, pageSize, startDate, lastDate);
+      const response = await GetApi(searchKey, pageNo, pageSize, startDate, endDate);
       console.log('subscription-get-all-api', response);
       if (response?.status === 200) {
-        setloaderState(false);
-        toast.success(response?.data?.message);
+        // toast.success(response?.data?.message);
+        setLoader(false)
         setData(response.data.subscriptions)
         setCurrentPage(response?.data?.currentPage)
         setTotalPages(response?.data?.totalPages)
-
       } else {
-        toast.error(response?.data?.message);
+        // toast.error(response?.data?.msg);
       }
     } catch (error) {
       console.log(error)
     }
-
   }
 
   // Delete api
 
-  const SubsDeleteApi = async (id) => {
-    try {
-      const response = await SubscriptionDeleteApi(id);
-      // console.log('my-subs-api',response)
-      if (response?.status === 200) {
-        setHidedelete(true)
-        setShowdelete(false)
-        toast.success(response?.data?.message);
-        showName()
-      } else {
-        toast.error(response?.data?.message);
-      }
+  // const SubsDeleteApi = async (id) => {
+  //   try {
+  //     const response = await SubscriptionDeleteApi(id);
+  //     if (response?.status === 200) {
+  //       setHidedelete(true)
+  //       setShowdelete(false)
+  //       toast.success(response?.data?.msg);
+  //       showName()
+  //     } else {
+  //       toast.error(response?.data?.msg);
+  //     }
 
-    } catch (error) {
-      console.log('catch')
-    }
-  }
+  //   } catch (error) {
+  //     console.log('catch')
+  //   }
+  // }
 
   // Get by id 
 
@@ -403,7 +473,6 @@ const Subscription = () => {
     setPutstate(id)
     try {
       const response = await SubscriptionGetByIdApi(id);
-
       console.log('my-get-by-id-data-subdcription', response)
       setPutphoneNo(response.data.subscription.phoneNo)
       setPutstatus(response.data.subscription.status)
@@ -416,9 +485,9 @@ const Subscription = () => {
 
       if (response?.status === 'success') {
 
-        toast.success(response?.data?.message);
+        toast.success(response?.data?.msg);
       } else {
-        toast.error(response?.data?.message);
+        toast.error(response?.data?.msg);
       }
     } catch (error) {
       console.log('catch')
@@ -438,6 +507,7 @@ const Subscription = () => {
     //   setIsValidPassword('')
     // }
     // let userContact = errors.putphoneNo; 
+
     setIsValidPasswordRequired(errors.putphoneNo)
     return errors;
   }
@@ -450,33 +520,44 @@ const Subscription = () => {
   }
   // ###### validation  end##########
 
-
   // handler for status option 
   const handleStatusChange = (value) => {
     setPutstatus(value);
   };
 
+  const offcanvasRef = useRef(null);
 
-  // Put Api 
+  // Put Apii
   const SubcPutDataApi = async (id) => {
+    console.log('id for request update',id)
     if (putphoneNo === '') {
       FuncValidation();
     }
     if (!isValidPassword === false) {
+      setLoader(true)
       try {
         const formData = new FormData()
         formData.append('planId', putpackage)
-        formData.append('email', putemail)
+        // formData.append('email', putemail)
         formData.append('phone', putphoneNo)
         formData.append('status', putstatus)
 
         const response = await SubscriptionPutApi(id, formData);
-        console.log('my-data-put-Api-subscription-12', response)
+        console.log(' put subscription response', response)
         if (response?.data?.status === "success") {
           toast.success(response?.data?.message);
           setUpdateState(false)
+          setLoader(false)
+          const offcanvasInstance = bootstrap.Offcanvas.getInstance(offcanvasRef.current);
+          offcanvasInstance.hide();
+          console.log('offcanvas', offcanvasRef)
           setSuccessUpdateState(true)
           showName()
+
+          setTimeout(() => {
+            showName()
+            setUpdateState(true);
+          }, 1000)
         } else {
           toast.error(response?.data?.message);
         }
@@ -486,90 +567,109 @@ const Subscription = () => {
       setOffcanvasClose(true);
     }
   }
+  const HandleState = () => {
+    setUpdateState(true)
+    setSuccessUpdateState(false)
+  }
   // Get All from  plan module
   const Getallplan = async () => {
+    setLoader(true)
     try {
-      const searchKey = '';
-      const page = '';
-      const size = '';
-      const response = await PlanGetApi(searchKey, page, size);
+      const response = await PlanGetApi();
       console.log('addPlan-1111', response)
       if (response?.status === 200) {
-        toast.success(data?.msg);
+        // toast.success(data?.msg);
+        setLoader(false)
         setPlandata(response?.data?.plans)
-        // console.log('planiddd1',response.data.Plan.planId)
       } else {
-        // console.log('fghjkghj')
-        toast.error(data?.msg);
       }
     } catch (error) {
-      console.log('catch')
+      console.log(error)
     }
     // console.log('my-dataset',data)
   }
 
-  const showNamedelete = () => {
-    if (showdelete === true && hidedelete === false) {
-      setShowdelete(false)
-      setHidedelete(true)
-    } else {
-      setShowdelete(true)
-    }
+  const showName123 = () => {
+    showName()
+    //  setSearchKey('')
   }
 
+  // const formatDate = (date) => {
+  //   if (!date) return null;
+  //   const year = date.getFullYear();
+  //   const month = date.getMonth() + 1;
+  //   const day = date.getDate() + 0;
 
+  //   if (month < 10) {
+  //     return '0' + month; 
+  //   } else if(day < 10){
+  //     return '0' + day; 
+  //   } else {
+  //     return `${year} ${month.toString()} ${day.toString()}`; 
+  //   }
+  // };
+
+  // return `${year}-${month}-${day}`;
 
   return (
     <Container>
-      {
-        loaderState && (
-          <DataLoader />
+       {
+        loader && (
+          <HashLoader />
         )
       }
       <div className="container-fluid main-body p-3">
+
         <div className='d-flex justify-content-between for-dislay-direction'>
+
           <div className="breadCrum ps-2">
             <nav style={{ '--bs-breadcrumb-divider': "'>'" }} aria-label="breadcrumb">
               <ol className="breadcrumb ms-2">
                 <li className="breadcrumb-item active heading-14 font-color" aria-current="page">Home</li>
-                <li className="breadcrumb-item breadcrum-li heading-14" ><Link href="#">Subscriptions</Link></li>
+                <li className="breadcrumb-item breadcrum-li heading-14" >
+                  <Link to="#" onClick={showName123}>Subscriptions</Link>
+                </li>
               </ol>
+              {/* to='/subscriptionPage' */}
             </nav>
           </div>
 
           <div className='d-flex g-1 for-media-query'>
-            <div className='p-0  me-2 heading-14'>
-              <button type="submit" className="btn btn-primary mb-3 heading-1 remove-shadow tableActionButtonBgColor text-color-000 heading-14" style={{ border: '1px solid #D9D9D9', lineHeight: '1.3' }}>
-                <svg width="14" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M13 12V14H3V12H2V14C2 14.6 2.4 15 3 15H13C13.6 15 14 14.6 14 14V12H13Z" fill="black" />
-                  <path d="M3 6L3.7 6.7L7.5 2.9V12H8.5V2.9L12.3 6.7L13 6L8 1L3 6Z" fill="black" />
-                </svg>
-                &nbsp;
-                Export
-              </button>
-            </div>
-            <form className="row  me-2">
+            <div className="row  me-2">
               <div className="col-9 ">
-                <input type="password" className="form-control form-control-sm form-focus input-border-color" style={{ fontSize: '15px', width: '283px' }} id="inputPassword2" placeholder="01/01/2024 - 02/10/2024" />
+                <div className="date-picker-container">
+                  <Flatpickr
+                    class="form-control"
+                    placeholder='Date'
+                    value={[startDate, endDate]}
+                    options={{
+                      mode: 'range',
+                      dateFormat: 'Y-n-j',
+                    }}
+                    onChange={handleDateChange}
+                    render={({ defaultValue, ...props }, ref) => (
+                      <div className="input-group d-flex">
+                        <input style={{ height: '34px' }} {...props} ref={ref} defaultValue={defaultValue} />
+                      </div>
+                    )}
+                  />
+                </div>
               </div>
+
               <div className="col-3 p-0 ps-2" >
-                <Link type="submit" className="btn btn-primary mb-3 heading-1 remove-shadow button-bg-color heading-14" style={{ border: '1px solid #008479', lineHeight: '1.3' }}>
-                  <svg width="14" height="8" viewBox="0 0 14 8" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ marginTop: '-2px' }}>
+                <Link type="submit" className="btn btn-primary mb-3 heading-1 remove-shadow button-bg-color heading-14" style={{ border: '1px solid #008479', lineHeight: '1.2', display: 'flex' }} onClick={showName}>
+                  <svg width="40" height="16" viewBox="0 0 14 8" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ marginTop: '2px' }}>
                     <path d="M4.57143 7.42857C4.57143 7.27702 4.63163 7.13167 4.7388 7.02451C4.84596 6.91735 4.9913 6.85714 5.14286 6.85714H8.57143C8.72298 6.85714 8.86833 6.91735 8.97549 7.02451C9.08265 7.13167 9.14286 7.27702 9.14286 7.42857C9.14286 7.58012 9.08265 7.72547 8.97549 7.83263C8.86833 7.9398 8.72298 8 8.57143 8H5.14286C4.9913 8 4.84596 7.9398 4.7388 7.83263C4.63163 7.72547 4.57143 7.58012 4.57143 7.42857ZM2.28571 4C2.28571 3.84845 2.34592 3.7031 2.45308 3.59594C2.56025 3.48878 2.70559 3.42857 2.85714 3.42857H10.8571C11.0087 3.42857 11.154 3.48878 11.2612 3.59594C11.3684 3.7031 11.4286 3.84845 11.4286 4C11.4286 4.15155 11.3684 4.2969 11.2612 4.40406C11.154 4.51122 11.0087 4.57143 10.8571 4.57143H2.85714C2.70559 4.57143 2.56025 4.51122 2.45308 4.40406C2.34592 4.2969 2.28571 4.15155 2.28571 4ZM0 0.571429C0 0.419876 0.060204 0.274531 0.167368 0.167368C0.274531 0.060204 0.419876 0 0.571429 0H13.1429C13.2944 0 13.4398 0.060204 13.5469 0.167368C13.6541 0.274531 13.7143 0.419876 13.7143 0.571429C13.7143 0.722981 13.6541 0.868326 13.5469 0.975489C13.4398 1.08265 13.2944 1.14286 13.1429 1.14286H0.571429C0.419876 1.14286 0.274531 1.08265 0.167368 0.975489C0.060204 0.868326 0 0.722981 0 0.571429Z" fill="white" />
                   </svg> &nbsp;
-                  Filter
+                  <p style={{ fontSize: '15px' }}>Filter</p>
                 </Link>
               </div>
-            </form>
+            </div>
+
             <div className='me-2'>
               <div className="input-group mb-3 ">
-                {/* <input type="text" className="form-control form-focus input-border-color " style={{ height: '34px' }} placeholder="Search" aria-label="Recipient's username" aria-describedby="basic-addon2" />
-                <span className="input-group-text button-bg-color button-color heading-14" style={{ cursor: 'pointer', height: "34px" }} id="basic-addon2">Search</span> */}
-
-                <form className="d-flex" role="search">
-                  <input className="form-control input-border-color form-focus" type="search" placeholder="Search" aria-label="Search" onChange={(e) => setSearchKeyData(e.target.value)} style={{ height: '31px' }} />
-                  <button className="btn searchButtons text-white" type="button" onClick={showName}><h2>Search</h2></button>
-                </form>
+                <input type="text" className="form-control form-focus input-border-color " style={{ height: '34px' }} value={searchKey} onChange={(e) => setSearchKey(e.target.value)} placeholder="Search" aria-label="Recipient's username" aria-describedby="basic-addon2" />
+                <span className="input-group-text button-bg-color button-color heading-14" style={{ cursor: 'pointer', height: "34px" }} id="basic-addon2" onClick={showName}>Search</span>
               </div>
             </div>
           </div>
@@ -610,13 +710,12 @@ const Subscription = () => {
 
               <tbody className='heading-14 align-middle greyTextColor greyText'>
                 {
-                  data.map((item, index) => (
+                  data?.map((item, index) => (
                     <tr key={item.id} className='my-bg-color align-middle'>
 
                       <td className=' greyText'>{index + 1}</td>
                       <td className=' greyText'>{item.price}</td>
                       <td className=' greyText'>{item.plan}</td>
-                      {/* <td  className=' greyText'>{item?.purchaseDate.slice(0,10)}</td> */}
                       <td className='greyText'>{item?.purchaseDate ? item.purchaseDate.slice(0, 10) : ''} </td>
 
                       <td className=' greyText'>{item.email}</td>
@@ -632,7 +731,7 @@ const Subscription = () => {
                           </button>
                           <ul className="dropdown-menu heading-14 anchor-color heading-14" >
                             <li><Link className="dropdown-item" data-bs-toggle="offcanvas" data-bs-target="#staticBackdrop" aria-controls="staticBackdrop" onClick={() => { GetByIdApi(item.subsId) }}>Edit Subscription</Link></li>
-                            <li><Link className="dropdown-item" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight22" aria-controls="offcanvasRight" to={''} onClick={() => { setDeleteid(item.subsId) }}>Delete</Link></li>
+                            {/* <li><Link className="dropdown-item" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight22" aria-controls="offcanvasRight" to={''} onClick={() => { setDeleteid(item.subsId) }}>Delete</Link></li> */}
                           </ul>
                         </div>
                       </td>
@@ -644,7 +743,7 @@ const Subscription = () => {
               <Toaster />
             </table>
 
-            <div className="d-flex">
+            <div className="d-flex" style={{ marginBottom: '10px' }}>
               <p className='font14'>Showing {currentPage} of {totalPages} Pages</p>
               <div className="ms-auto">
                 <ReactPaginate
@@ -656,57 +755,16 @@ const Subscription = () => {
               </div>
             </div>
 
-
-
           </div>
-          {/* 
-          <div className="row ">
-            <div className='d-flex justify-content-between '>
-              <div className='heading-13 ps-4'>
-                <p>Showing 1 to 10 entries</p>
-              </div>
-              <div className='pe-4'>
-                <nav aria-label="Page navigation example ">
-                  <ul className="pagination my-pagina " >
-                    <li className="page-item">
-                      <a className="page-link pagination-a" href="#" aria-label="Previous">
-                        <span aria-hidden="true">
-                          <svg width="8" height="14" viewBox="0 0 8 14" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M8 0.84875L7.1375 0L0 7L7.1375 14L8 13.1556L1.72917 7L8 0.84875Z" fill="black" />
-                          </svg>
-                        </span>
-                      </a>
-                      &nbsp;
-                    </li>
-                    &nbsp;
-                    <li className="page-item"><a className="page-link pagination-a" href="#">1</a></li>&nbsp;
-                    <li className="page-item"><a className="page-link pagination-a" href="#">2</a></li>&nbsp;
-                    <li className="page-item"><a className="page-link pagination-a" href="#">3</a></li>&nbsp;
-                    <li className="page-item"><a className="page-link pagination-a" href="#">4</a></li>&nbsp;
-                    <li className="page-item"><a className="page-link pagination-a" href="#">5</a></li>&nbsp;
-                    <li className="page-item">
-                      <a className="page-link pagination-a" href="#" aria-label="Next" >
-                        <span aria-hidden="true">
-                          <svg width="8" height="14" viewBox="0 0 8 14" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M0 0.84875L0.8625 0L8 7L0.8625 14L0 13.1556L6.27083 7L0 0.84875Z" fill="black" />
-                          </svg>
-                        </span>
-                      </a>
-                    </li>
-                  </ul>
-                </nav>
-              </div>
-            </div>
 
-          </div> */}
+
         </div>
         {/* ########################## edit offcanvas  start ################  */}
 
-        <div className="offcanvas-end offcanvas" data-bs-backdrop="static" tabindex="-1" id="staticBackdrop" aria-labelledby="staticBackdropLabel">
-          {/* <div className={` offcanvas-end offcanvas${offcanvasclose ? ' offcanvas-close' : ''}`} data-bs-backdrop="static" tabindex="-1" id="staticBackdrop" aria-labelledby="staticBackdropLabel"> */}
           {
             updateState && (
               <>
+              <div className="offcanvas-end offcanvas" data-bs-backdrop="static" tabindex="-1" id="staticBackdrop" aria-labelledby="staticBackdropLabel" ref={offcanvasRef}>
                 <div className="offcanvas-header">
                   <Link data-bs-dismiss="offcanvas" >
                     <svg width="28" height="15" viewBox="0 0 28 15" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -759,7 +817,7 @@ const Subscription = () => {
                     <div>
                       {!isValidPassword && (
                         <p className='ms-1' style={{ color: 'red', fontSize: '14px', float: 'left', marginTop: '-2px' }}>
-                          Atleast 10 digit  required
+                          Atleast 10 digit required
                         </p>
                       )}
                       <p className='ms-1' style={{ color: 'red', float: 'left', fontSize: '14px', marginTop: '-2px' }}>{isValidPasswordRequired}</p>
@@ -775,16 +833,17 @@ const Subscription = () => {
                       </select>
                     </div>
                     <div className='my-button11 '>
-                      <button type="button" className="btn btn-outline-success" value={`${offcanvasclose === true ? 'data-bs-dismiss="offcanvas" aria-label="Close"' : ''}`} onClick={(e) => SubcPutDataApi(putstate)}>Update</button>
-                      <button type="button" className="btn btn-outline-success">Cancel</button>
+                      <button type="button" className="btn btn-outline-success" value={`${offcanvasclose === true ? 'data-bs-dismiss="offcanvas" aria-label="Close"' : ''}`} style={{ backgroundColor: '#008479', color: '#fff' }} onClick={(e) => SubcPutDataApi(putstate)}>Update</button>
+                      <button type="button" className="btn btn-outline-success" data-bs-dismiss="offcanvas" aria-label="Close">Cancel</button>
                       {/* <Toaster /> */}
                     </div>
                   </div>
                 </div>
+          </div>
               </>
             )
           }
-          {
+          {/* {
             successUpdateState && (
               <>
                 <div className="offcanvas-header d-block for-my-display">
@@ -800,7 +859,6 @@ const Subscription = () => {
                           <path d="M11.2266 26.4378L35.68 2" stroke="white" stroke-width="5" stroke-miterlimit="10" />
                           <path d="M14.3912 26.5944L2 14.2032" stroke="white" stroke-width="5" stroke-miterlimit="10" />
                         </svg>
-                        {/* <img src="./images/XMLID_1_.png" alt="" /> */}
                       </div>
                       <div className="content mt-5">
                         <p className='heading-20'>Successful Update</p>
@@ -808,7 +866,7 @@ const Subscription = () => {
                         <p className='mb-5' style={{ color: '#ADADBD', fontSize: '14px' }}>Your profile has been <br /> Successfully Updated</p>
                       </div>
                       <div className='button-position'  >
-                        <button type="button" className="btn btn-outline-primary button112233 mt-4 mb" data-bs-dismiss="offcanvas" aria-label="Close" style={{ fontSize: '14px' }}>Continue</button>
+                        <button type="button" className="btn btn-outline-primary button112233 mt-4 mb" data-bs-dismiss="offcanvas" aria-label="Close" style={{ fontSize: '14px' }} onClick={HandleState}>Continue</button>
 
                       </div>
 
@@ -817,8 +875,7 @@ const Subscription = () => {
                 </div>
               </>
             )
-          }
-        </div>
+          } */}
 
 
         {/* ########################## edit offcanvas  end  ################  */}
@@ -855,15 +912,15 @@ const Subscription = () => {
                         <p>This Action will be permanently <br /> delete the Profile Data</p>
                       </div>
                       <div className="form-check mt-1">
-                        <input className="form-check-input my-123-form-check-input" type="checkbox" value="" id="flexCheckDefault" />
-                        <label className="form-check-label agree" for="flexCheckDefault">
+                        <input className="form-check-input my-123-form-check-input" type="checkbox" value="" id="flexCheckDefault" onClick={(e) => setConfirmation(!confirmation)} />
+                        <label className="form-check-label agree" for="flexCheckDefault" >
                           I Agree to delete the Profile Data
                         </label>
                       </div>
 
                       <div className="mt-4">
-                        <button type="button" className="btn btn-outline-primary button00" onClick={(e) => SubsDeleteApi(deleteid)}>Delete</button>
-                        <button type="button" className="btn btn-outline-primary button00 ms-2" data-bs-dismiss="offcanvas" aria-label="Close">Cancel</button>
+                        <button type="button" className="btn btn-outline-primary button00 color" onClick={(e) => SubsDeleteApi(deleteid)} disabled={confirmation ? true : false}>Delete</button>
+                        <button type="button" className="btn btn-outline-primary button00 ms-2" data-bs-dismiss="offcanvas" aria-label="Close" >Cancel</button>
                       </div>
 
                     </div>

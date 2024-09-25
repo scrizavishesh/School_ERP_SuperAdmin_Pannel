@@ -84,7 +84,7 @@ const LineChart = () => {
     
   return (
     <>
-        <div className="chart-container" style={{height: '19.4em'}}>
+        <div className="chart-container" style={{position: "relative", height:"41vh", width:"100%"}}>
             <Line data={data} options={options}></Line>
         </div>
     </>
