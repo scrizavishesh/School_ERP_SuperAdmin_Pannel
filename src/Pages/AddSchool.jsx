@@ -76,7 +76,6 @@ const AddSchool = () => {
   const { register, handleSubmit, formState: { errors } } = useForm({
     mode: 'onChange'
   });
-dvmdslndsdsnerkllknf
   useEffect(() => {
     getAllPlans();
   }, [token]);
