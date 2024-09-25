@@ -1,23 +1,29 @@
-:root {
+
+  :root {
     /* ******************************************** */
 
+    --sidebarBackground: #F0F8F7;
     --greyTextColor: #8F8F8F;
     --orangeTextColor: #FF914D;
     --greenTextColor: #008479;
     --activeTextColor: #34C38F;
     --deactiveTextColor: #C90303;
     --blueTextColor: #0085FF;
+    --borderSidebar: #D7E7E5;
     --lightGreenBorderColor: #D7E7E5;
     --darkGreenBorderColor: #00A67E;
     --greyborderColor: #DDDDEB;
     --tableGreyBackgroundColor: #F2F3F6;
     --headingBackgroundColor: #E5F3F2;
+    --formInputBorder : #dee2e6;
+    --activebglightgreen: #E5F3F2;
 
+    --modalHeadingBg : #F2F3F6;
     --greyInputborderColor: #E4E7EB;
     --greyInputTextColor: #ADADBD;
 
     --modalBorderColor: #DEE2E7;
-
+    --verifiedButton : #0AAD24;
 
     --redColorBtn: #B50000;
     --greenColorBtn: #008479;
@@ -41,11 +47,40 @@
     /* ******************************************** */
 
     --font-size-30: 30px;
+    --font-size-26: 26px;
     --font-size-20: 20px;
+    --font-size-18: 18px;
+    --font-size-16: 16px;
     --font-size-15: 15px;
     --font-size-14: 14px;
     --font-size-13: 13px;
     --font-size-12: 12px;
+
+
+    --fontWeigth500:500;
+    --fontWeigth600:600;
+    --fontWeigth700:700;
+    --fontWeigth900:900;
+
+
+    --font12: 12px;
+    --font14: 14px;
+    --font16: 16px;
+
+    --breadCrumTextColor: #78788C;
+    --breadCrumActiveTextColor: #008479;
+    --OrangeBtnColor: #FF914D;
+
+    --fontControlBorder: #E4E7EB;
+    --BtnBorder: #ECEBF3;
+    --greyBorder: #E4E7EB;
+    --greyState: #ADADBD;
+
+    --tableheadingbg: #F2F3F6;
+    --tableTopHeadingBorder: #EECEBE;
+    --tableTopHeadingBg: #FFF9F6;
+    --tableTopHeadText: #8F8F8F;
+
 
     /* ******************************************** */
 }
@@ -63,6 +98,33 @@ li {
 }
 
 /* *********************          Text Font Size     ********************* */
+
+.activeTexttt{
+    color: var(--greenTextColor);
+}
+
+
+.formcontrolsearch {
+    border-radius: 5px 0px 0px 5px !important;
+    border: 1.5px solid var(--fontControlBorder);
+}
+
+.searchhhButtons {
+    border-radius: 0px 5px 5px 0px !important;
+    background-color: var(--greenTextColor) !important;
+    border: none !important ;
+    width: 90px;
+    height: 38px;
+}
+
+
+.bgHeaderModal{
+    background-color: var(--modalHeadingBg);
+}
+
+.font18{
+    font-size: var(--font-size-18);
+}
 
 h1 {
     font-size: var(--font-size-30) !important;
@@ -86,6 +148,14 @@ h5 {
 
 tr{
     border-color: var(--greyInputborderColor);
+}
+
+.font20{
+    font-size: var(--font-size-20);
+}
+
+.font16{
+    font-size: var(--font-size-16);
 }
 
 /* *********************          Text Font Size     ********************* */
@@ -119,10 +189,10 @@ tr{
 .blueText{
     color: var(--blueTextColor) !important;
 }
-.table-row-bg-color{
-    background: var(--tableRowBgColor) !important;
-  }
 
+.font26{
+    font-size: var(--font-size-26);
+}
 
 
 /* ***********************          Text Colors     *********************** */
@@ -130,12 +200,17 @@ tr{
 /* ***********************          border Colors     *********************** */
 
 .cardradius {
-    border-radius: 10px;
+    border-radius: 10px !important;
+}
+
+.cardradius2 {
+    border-radius: 5px !important;
 }
 
 .sidebarborder {
     border-right: 1px solid var(--lightGreenBorderColor)
 }
+
 
 .sidebarlinkborder {
     border-bottom: 1px solid var(--lightGreenBorderColor)
@@ -166,6 +241,7 @@ tr{
 
 .formcontrolsearch{
     border-radius: 5px 0px 0px 5px;
+    border: 1.5px solid var(--fontControlBorder);
 }
 
 .searchButtons {
@@ -173,7 +249,7 @@ tr{
     border-radius: 0px 5px 5px 0px;
 }
 
-.searchButtons:hover {
+.searchButtons:hover ,.searchButtons:active , .searchButtons:focus {
     background-color: var(--greenColorBtn);
     border-top-right-radius: 5px;
     border-bottom-right-radius: 5px;
@@ -186,7 +262,7 @@ tr{
     height: 24px;
 }
 
-.viewDetailsButtons:hover {
+.CorrectSignButtons:hover, .CorrectSignButtons:focus {
     background-color: var(--lightgreyColorBtn);
     border-radius: 2px;
     width: 98px;
@@ -199,46 +275,102 @@ tr{
 }
 
 
-.addButtons {
+.CorrectSignButtons {
     background-color: var(--greenColorBtn);
     border-radius: 5px;
-    width: 115px;
+    width: 51px;
     height: 38px;
 }
 
-.addButtons:hover {
+.CorrectSignButtons:hover , .CorrectSignButtons:focus{
     background-color: var(--greenColorBtn);
     border-radius: 5px;
-    width: 115px;
+    width: 51px;
     height: 38px;
+}
+
+.printButton{
+    background-color: var(--greenColorBtn);
+    border-radius: 5px;
+    width: 64px;
+    height: 36px;
+}
+
+.printButton:hover, .printButton:focus {
+    background-color: var(--greenColorBtn);
+    border-radius: 5px;
+    width: 64px;
+    height: 36px;
+}
+
+.addButtons {
+    background-color: var(--greenColorBtn);
+    border-radius: 5px;
+    width: 135px;
+    height: 36px;
+}
+
+.addButtons:hover, .addButtons:focus {
+    background-color: var(--greenColorBtn);
+    border-radius: 5px;
+    width: 135px;
+    height: 36px;
+}
+
+.addButtons2 {
+    background-color: var(--greenColorBtn);
+    border-radius: 5px;
+    width: 135px;
+    height: 36px;
+}
+
+.addButtons2:hover, .addButtons2:focus {
+    background-color: var(--greenColorBtn);
+    border-radius: 5px;
+    width: 135px;
+    height: 36px;
+}
+
+.addCategoryButtons {
+    background-color: var(--greenColorBtn);
+    border-radius: 5px;
+    width: 185px;
+    height: 36px;
+}
+
+.addCategoryButtons:hover, .addCategoryButtons:focus {
+    background-color: var(--greenColorBtn);
+    border-radius: 5px;
+    width: 185px;
+    height: 36px;
 }
 
 .continueButtons {
     background-color: var(--greenColorBtn);
     border-radius: 0px;
     width: 92px;
-    height: 38px;
+    height: 36px;
 }
 
-.continueButtons:hover {
+.continueButtons:hover , .continueButtons:focus{
     background-color: var(--greenColorBtn);
     border-radius: 0px;
     width: 92px;
-    height: 38px;
+    height: 36px;
 }
 
 .deleteButtons {
     background-color: var(--redColorBtn);
     border-radius: 0px;
     width: 75px;
-    height: 38px;
+    height: 36px;
 }
 
-.deleteButtons:hover {
+.deleteButtons:hover,.deleteButtons:focus {
     background-color: var(--redColorBtn);
     border-radius: 0px;
     width: 75px;
-    height: 38px;
+    height: 36px;
 }
 
 .actionButtons {
@@ -249,7 +381,7 @@ tr{
     line-height: 12px;
 }
 
-.actionButtons:hover {
+.actionButtons:hover, .actionButtons:focus {
     background-color: var(--darkgreyColorBtn);
     border-radius: 5px;
     width: 87px;
@@ -260,28 +392,56 @@ tr{
     background-color: var(--greenColorBtn);
     border-radius: 5px;
     width: 80px;
-    height: 38px;
+    height: 36px;
 }
 
-.updateButtons:hover {
+.updateButtons:hover, .updateButtons:focus {
     background-color: var(--greenColorBtn);
     border-radius: 5px;
     width: 80px;
-    height: 38px;
+    height: 36px;
+}
+
+.updateCreateButtons {
+    background-color: var(--greenColorBtn);
+    border-radius: 5px;
+    width: 120px;
+    height: 36px;
+}
+
+.updateCreateButtons:hover , .updateCreateButtons:focus{
+    background-color: var(--greenColorBtn);
+    border-radius: 5px;
+    width: 120px;
+    height: 36px;
+}
+
+.updateCategoryButtons {
+    background-color: var(--greenColorBtn);
+    border-radius: 5px;
+    width: 150px;
+    height: 36px;
+}
+
+.updateCategoryButtons:hover, .updateCategoryButtons:focus  {
+    background-color: var(--greenColorBtn);
+    border-radius: 5px;
+    width: 150px;
+    height: 36px;
 }
 
 .dltcancelButtons {
     border-color: var(--cancelBtn);
     border-radius: 0px;
     width: 71px;
-    height: 38px;
+    height: 36px;
 }
 
-.dltcancelButtons:hover {
+.dltcancelButtons:hover, .dltcancelButtons:focus {
     border-color: var(--cancelBtn);
     border-radius: 0px;
     width: 71px;
-    height: 38px;
+    height: 36px;
 }
 
 .dltcancelButtons:active{
@@ -293,17 +453,17 @@ tr{
     border-color: var(--cancelBtn);
     border-radius: 5px;
     width: 71px;
-    height: 38px;
+    height: 36px;
 }
 
 .cancelButtons:hover {
     border-color: var(--cancelBtn);
     border-radius: 5px;
     width: 71px;
-    height: 38px;
+    height: 36px;
 }
 
-.cancelButtons:active{
+.cancelButtons:active , .cancelButtons:focus{
     border-color: var(--cancelBtn) !important;
 }
 
@@ -315,7 +475,7 @@ tr{
     height: 45px;
 }
 
-.confirmButtons:hover {
+.confirmButtons:hover, .confirmButtons:focus {
     background-color: var(--greenColorBtn);
     border-radius: 5px;
     width: 422px;
@@ -533,9 +693,6 @@ tr{
   .heading-13{
     font-size: var(--font-size-13) !important;
   }
-  .heading-20{
-    font-size: var(--font-size-20) !important;
-  }
   .heading-14{
     font-size: var(--font-size-14) !important;
   }
@@ -583,3 +740,138 @@ tr{
   .tableActionButtonBgColor{
     background: var(--tableActionButtonBgColor) !important;
   }
+
+
+
+
+
+
+
+  /* ************************************************************************************************************************************** */
+
+  /* NewPageCSS */
+
+.font12{
+    font-size: var(--font12) !important;
+}
+
+.font14{
+    font-size: var(--font14) !important;
+}
+
+.font16{
+    font-size: var(--font16) !important;
+}
+
+.fontWeight500{
+    font-weight: var(--fontWeigth500);
+}
+
+.fontWeight600{
+    font-weight: var(--fontWeigth600);
+}
+
+.fontWeight700{
+    font-weight: var(--fontWeigth700);
+}
+
+.fontWeight900{
+    font-weight: var(--fontWeigth900);
+}
+
+.greyTextt{
+    color: var(--greyState);
+}
+
+.greenTextt{
+    color: var(--breadCrumActiveTextColor);
+}
+
+
+
+/* ************************        PAGINATION      ****************************** */
+
+.activeBtn, .page-link:hover, .activeBtn:active, .activeBtn:focus{
+    color: #fff !important;
+    box-shadow: none !important;
+    background-color : #008479 !important;
+    background-image: none !important;
+  }
+
+  .page-link{
+    color: #000 !important;
+    border: 1px solid #DDDDEB !important;
+    background-image: linear-gradient(90deg, #E8E8E8, #FFFFFF) !important;
+  }
+
+  .page-link:active, .page-link:focus{
+    color: #000 !important;
+    border: 1px solid #DDDDEB !important;
+    background-image: linear-gradient(90deg, #E8E8E8, #FFFFFF) !important;
+  }
+
+
+
+
+/* 
+  Assignment 
+  Sample Paper 
+   */
+
+
+   /* view/download */
+
+
+
+
+
+
+
+
+
+
+
+
+/* // Pagination  */
+
+
+.pagination {
+    display: flex;
+    list-style: none;
+    padding: 0;
+}
+
+.pagination li {
+    margin: 0 5px;
+}
+
+.pagination li a {
+    box-shadow: none !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    font-size: var(--font-size-14);
+    border-radius: 8px;
+    border: 1px solid #ddd;
+    text-decoration: none;
+    color: #000;
+    /* background-color: #f5f5f5;
+    transition: background-color 0.3s; */
+}
+
+.pagination li a:hover {
+    background-color: #317a77 !important;
+    color: #fff !important;
+}
+
+.pagination li.active a {
+    background-color: #317a77 !important;
+    color: #fff;
+    font-weight: bold;
+}
+
+
+
+

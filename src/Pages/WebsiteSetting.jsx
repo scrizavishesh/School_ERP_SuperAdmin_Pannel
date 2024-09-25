@@ -15,6 +15,7 @@ const Container = styled.div`
     background-color: #F2F3F6;  
   }
 .main-content-conatainer22{
+    padding-bottom: 5% !important;
     background-color: #fff;
     margin: 10px;
     /* height: 100vh; */

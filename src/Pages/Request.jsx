@@ -11,7 +11,8 @@ import { RequestUpdatePutApi } from '../Utils/Apis'
 import Flatpickr from "react-flatpickr";
 import "flatpickr/dist/themes/light.css";
 import { Icon } from '@iconify/react/dist/iconify.js';
-import HashLoader from './HashLoader';
+// import HashLoader from './HashLoader';
+import DataLoader from '../Layouts/Loader';
 
 // ## style css area start ####  
 
@@ -638,7 +639,7 @@ const ManageFaq = () => {
     <Container>
       {
         loader && (
-          <HashLoader />
+          <DataLoader />
         )
       }
       <div className="container-fluid main-body p-3">

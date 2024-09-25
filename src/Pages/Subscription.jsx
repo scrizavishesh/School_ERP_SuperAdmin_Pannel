@@ -14,7 +14,8 @@ import { valueOrDefault } from 'chart.js/helpers';
 import { Icon } from '@iconify/react/dist/iconify.js';
 import Flatpickr from "react-flatpickr";
 import "flatpickr/dist/themes/light.css";
-import HashLoader from './HashLoader';
+// import HashLoader from './HashLoader';
+import DataLoader from '../Layouts/Loader';
 // ## style css area start ####  
 
 const Container = styled.div`
@@ -615,7 +616,7 @@ const Subscription = () => {
     <Container>
        {
         loader && (
-          <HashLoader />
+          <DataLoader />
         )
       }
       <div className="container-fluid main-body p-3">

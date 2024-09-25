@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom';
 
 const Container= styled.div`
     height: 100vh;
+    
     .btnsubmitOwn{
         background-color: #008479 !important;
     }
@@ -64,7 +65,7 @@ const ForgetSuccess = () => {
                                     <p className='text-grey text-center'>Your password has been successfully reset, Click<br/>below to continue your access.</p>
                                     <form>
                                         <div className="d-grid gap-2 col-12 mx-auto">
-                                            <Link type="submit" className="btn btnsubmitOwn text-white" to='/dashboard'>Continue</Link>
+                                            <Link type="submit" className="btn btnsubmitOwn text-white" to='/'>Continue</Link>
                                         </div>
                                         <div className="d-grid gap-2 col-12 mx-auto">
                                             <Link type="submit" className="m-2 text-center text-black text-decoration-none" to='/'>
